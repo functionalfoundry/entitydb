@@ -5,15 +5,22 @@
             [workflo.entitydb.core :as entitydb]))
 
 
-(deftest check-specs
-  (println "")
-  (println "Checkable symbols:")
-  (doseq [sym (stest/checkable-syms)]
-    (println "-" sym))
-  (when-some [results (stest/check)]
-    (doseq [result results]
-      (is
-       (nil? (get result :failure))
-       (str "\n"
-            "Symbol `" (get result :sym) "` failed its spec:\n"
-            (with-out-str (pprint (stest/abbrev-result result))))))))
+(def check-opts
+  {:clojure.spec.test.check/opts
+   {:num-tests 25
+    :max-size 25}})
+
+
+#?(:clj
+   (deftest check-specs
+     (println "")
+     (println "Checking symbols with specs:")
+     (doseq [sym (sort (stest/checkable-syms))]
+       (println "-" sym)
+       (when-some [results (stest/check sym check-opts)]
+         (doseq [result results]
+           (is
+            (nil? (get result :failure))
+            (str "\n"
+                 "Symbol `" (get result :sym) "` failed its spec:\n"
+                 (with-out-str (pprint (stest/abbrev-result result))))))))))
