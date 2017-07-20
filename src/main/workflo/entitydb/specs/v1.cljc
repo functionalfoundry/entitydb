@@ -29,7 +29,8 @@
   (s/with-gen
     keyword?
     #(s/gen #{:team/name :team/users :team/project
-              :user/name :user/email :user/address})))
+              :user/name :user/email :user/address
+              :project/name})))
 
 
 (s/def ::entity-attribute-value
@@ -88,7 +89,9 @@
 
 
 (s/def ::entity-name
-  keyword?)
+  (s/with-gen
+    keyword?
+    #(s/gen #{:user :team :project})))
 
 
 (s/def ::data
@@ -115,4 +118,12 @@
 ;;;; Schema
 
 (s/def ::type-map
-  (s/map-of keyword? ::entity-name :min-count 1))
+  (s/with-gen
+    (s/map-of ::entity-attribute-name ::entity-name :min-count 1)
+    #(s/gen #{{:project/name :project
+               :team/name :team
+               :team/users :team
+               :team/project :team
+               :user/name :user
+               :user/email :user
+               :user/address :user}})))
