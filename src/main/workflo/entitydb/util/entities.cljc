@@ -1,5 +1,6 @@
 (ns workflo.entitydb.util.entities
   (:require [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]
             [clojure.walk :refer [walk]]
             [workflo.entitydb.specs.v1 :as specs.v1]
             [workflo.entitydb.util.identity :as identity]))
@@ -7,15 +8,6 @@
 
 
 ;;;; Specs
-
-
-(s/def ::specs.v1/refified-entity
-  (s/and ::specs.v1/entity
-         (fn [entity]
-           (every? (fn [val]
-                     (and (not (s/valid? ::specs.v1/entity val))
-                          (not (s/valid? ::specs.v1/entities val))))
-                   (vals entity)))))
 
 
 (s/def ::use-spec? boolean?)
@@ -260,6 +252,42 @@
                      (persistent!)
                      (with-meta (meta entity)))
      :references (persistent! references)}))
+
+
+;;;; Recursive flattening
+
+
+(s/fdef flatten-entities
+        :args (s/cat :entities ::specs.v1/entities)
+        :ret ::specs.v1/refified-entities)
+
+
+(defn flatten-entities
+  [in-entities]
+  (let [out-entities (transient #{})]
+    (loop [remaining in-entities]
+      (if (empty? remaining)
+        (persistent! out-entities)
+        (let [entity (first remaining)]
+          (let [{:keys [entity references]} (extract-references entity)]
+            (conj! out-entities entity)
+            (recur (concat (rest remaining) references))))))))
+
+
+;;;; Deduplication
+
+
+(s/fdef dedupe-entities
+  :args (s/cat :entities ::specs.v1/entities
+               :merge-fn (s/with-gen fn? #(gen/return (comp last vector))))
+  :ret ::specs.v1/entities)
+
+
+(defn dedupe-entities
+  [entities merge-fn]
+  (into [] (map (fn [duplicates]
+                  (reduce merge-fn (first duplicates) (rest duplicates))))
+        (vals (group-by :workflo/id entities))))
 
 
 ;;;; Type deduction
