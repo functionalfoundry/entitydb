@@ -52,6 +52,20 @@
         :vector (s/coll-of ::entity :kind vector? :min-count 1 :gen-max 10)))
 
 
+(s/def ::refified-entity
+  (s/and ::entity
+         (fn [entity]
+           (every? (fn [val]
+                     (and (not (s/valid? ::entity val))
+                          (not (s/valid? ::entities val))))
+                   (vals entity)))))
+
+
+(s/def ::refified-entities
+  (s/or :set (s/coll-of ::refified-entity :kind set? :min-count 1 :gen-max 10)
+        :vector (s/coll-of ::refified-entity :kind vector? :min-count 1 :gen-max 10)))
+
+
 (s/def ::ref
   (s/map-of #{:workflo/id} ::entity-id :min-count 1 :max-count 1))
 
