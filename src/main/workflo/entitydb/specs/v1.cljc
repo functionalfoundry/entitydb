@@ -25,8 +25,11 @@
   ::entity-id)
 
 
-(s/def ::entity-attribute
-  keyword?)
+(s/def ::entity-attribute-name
+  (s/with-gen
+    keyword?
+    #(s/gen #{:team/name :team/users :team/project
+              :user/name :user/email :user/address})))
 
 
 (s/def ::entity-attribute-value
@@ -34,7 +37,7 @@
 
 
 (s/def ::entity-attribute-value-map
-  (s/map-of ::entity-attribute ::entity-attribute-value
+  (s/map-of ::entity-attribute-name ::entity-attribute-value
             :min-count 2
             :gen-max 10))
 
