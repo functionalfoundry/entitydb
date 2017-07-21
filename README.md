@@ -5,6 +5,50 @@
 Database for entities defined with `defentity` from `workflo/macros`.
 
 
+## Database format
+
+The database format is defined with the `workflo.entitydb.specs.v1/entitydb`
+spec. An `entitydb` database is structured as follows:
+
+```
+{;; Actual database content
+ :workflo.entitydb.v1/data
+ {<entity-name-1> {<entity-id-1> <entity-data-1>
+                   ...}
+  ...}
+
+ ;; Indexes
+ :workflo.entitydb.v1/indexes
+ {<index-name-1> <index-data-1>
+  ...}}
+```
+
+where `:workflo.entitydb.v1/indexes` is entirely optional.
+
+**NOTE: There is no support for indexes yet. We will work out a concept
+soon.**
+
+A specific database with two `:team` and `:user` entities might look
+like this:
+
+```
+{:workflo.entitydb.v1/data
+ {:user {"596e2b0e7ca846ed9508775ebe6f3541"
+         {:workflo/id "596e2b0e7ca846ed9508775ebe6f3541"
+          :user/name "Joe"
+          :user/email "joe@email.com"}
+         "596e2b0e9b814772aabf6a997273b3ed"
+         {:workflo/id "596e2b0e9b814772aabf6a997273b3ed"
+          :user/name "Linda"
+          :user/email "linda@email.com"}}
+  :team {"596e2b0e679e46aea7388db22ccd4b57"
+         {:workflo/id "596e2b0e679e46aea7388db22ccd4b57"
+          :team/name "Team Alpha"
+          :team/members #{{:workflo/id "596e2b0e7ca846ed9508775ebe6f3541"}
+                          {:workflo/id "596e2b0e9b814772aabf6a997273b3ed"}}}}}}}
+```
+
+
 ## Testing
 
 1. Install [boot](http://boot-clj.com/)
