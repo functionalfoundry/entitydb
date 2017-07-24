@@ -6,7 +6,6 @@
             [workflo.entitydb.util.identity :as identity]))
 
 
-
 ;;;; Specs
 
 
@@ -150,11 +149,11 @@
             (assoc out k
                    (cond
                      ;; Single reference attribute
-                     (ref? v)
+                     (entity? v)
                      (entity->ref v)
 
                      ;; Multi-reference attribute
-                     (refs? v)
+                     (entities? v)
                      (walk entity->ref identity v)
 
                      ;; Other attribute
