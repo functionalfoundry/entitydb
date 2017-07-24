@@ -1,5 +1,6 @@
 (ns workflo.entitydb.spec-test
   (:require [clojure.pprint :refer [pprint]]
+            [clojure.string :as str]
             [clojure.test :refer [deftest is]]
             [clojure.spec.test.alpha :as stest]
             [workflo.entitydb.core :as entitydb]))
@@ -11,11 +12,17 @@
     :max-size 25}})
 
 
+(defn- entitydb-sym? [sym]
+  (str/starts-with? (namespace sym) "workflo.entitydb."))
+
+
 #?(:clj
    (deftest check-specs
      (println "")
      (println "Checking symbols with specs:")
-     (doseq [sym (sort (stest/checkable-syms))]
+     (doseq [sym (->> (stest/checkable-syms)
+                      (filter entitydb-sym?)
+                      (sort))]
        (println "-" sym)
        (when-some [results (stest/check sym check-opts)]
          (doseq [result results]
