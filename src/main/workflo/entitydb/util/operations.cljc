@@ -5,9 +5,55 @@
             [workflo.entitydb.util.entities :as entities]))
 
 
+;;;; Helpers
+
+
+(s/def ::entity-path
+  (s/tuple #{:workflo.entitydb.v1/data}
+           ::specs.v1/entity-name
+           ::specs.v1/entity-id))
+
+
+(s/fdef entity-path
+  :args (s/cat :entity-or-ref (s/or :entity ::specs.v1/entity
+                                    :ref ::specs.v1/ref)
+               :entity-name ::specs.v1/entity-name)
+  :ret  ::entity-path)
+
+
 (defn- entity-path
   [entity entity-name]
   [:workflo.entitydb.v1/data entity-name (get entity :workflo/id)])
+
+
+(s/fdef remove-entity-or-ref-at-path
+  :args (s/cat :db ::specs.v1/entitydb
+               :path ::entity-path)
+  :fn   (fn [{:keys [args ret]}]
+          (let [path (get args :path)]
+            (not (contains? (get-in ret (butlast path)) (last path)))))
+  :ret  ::specs.v1/entitydb)
+
+
+(defn- remove-entity-or-ref-at-path
+  [db path]
+  (let [db-without-entity (update-in db (butlast path) dissoc (last path))
+        entity-map        (get-in db-without-entity (butlast path))]
+    (if (or (nil? entity-map) (empty? entity-map))
+      (update-in db-without-entity (butlast (butlast path)) dissoc (last (butlast path)))
+      db-without-entity)))
+
+
+(s/fdef remove-at-path-if-ref
+  :args (s/cat :db ::specs.v1/entitydb
+               :path ::entity-path)
+  :ret  ::specs.v1/entitydb)
+
+
+(defn- remove-at-path-if-ref
+  [db path]
+  (cond-> db
+    (entities/ref? (get-in db path)) (remove-entity-or-ref-at-path path)))
 
 
 (s/fdef add-entity
@@ -85,10 +131,35 @@
 
 
 (defn update-entity
-  [db entity-name entity merge-fn]
-  (->> entity
-       (entities/refify-entity)
-       (update-in db (entity-path entity entity-name) merge-fn)))
+  ([db entity-name entity]
+   (update-entity db entity-name entity default-merge))
+  ([db entity-name entity merge-fn]
+   (let [path (entity-path entity entity-name)]
+     (-> db
+         (update-in path merge-fn (entities/refify-entity entity))
+         (remove-at-path-if-ref path)))))
+
+
+(s/fdef remove-entity-or-ref
+  :args (s/cat :db ::specs.v1/entitydb
+               :entity-name ::specs.v1/entity-name
+               :entity-or-ref (s/or :entity ::specs.v1/entity
+                                    :ref ::specs.v1/ref))
+  :fn   (fn [{:keys [args ret]}]
+          (let [out-db      ret
+                entity-name (get args :entity-name)
+                entity-or-ref (second (get args :entity-or-ref))
+                path        (entity-path entity-or-ref entity-name)]
+            (not (contains? (get-in out-db (butlast path)) (last path)))))
+  :ret  ::specs.v1/entitydb)
+
+
+(defn- remove-entity-or-ref
+  [db entity-name entity-or-ref]
+  (let [path (entity-path entity-or-ref entity-name)]
+    (if (contains? (get-in db (butlast path)) (last path))
+      (remove-entity-or-ref-at-path db path)
+      db)))
 
 
 (s/fdef remove-entity
@@ -106,12 +177,25 @@
 
 (defn remove-entity
   [db entity-name entity]
-  (let [path              (entity-path entity entity-name)
-        db-without-entity (update-in db (butlast path) dissoc (last path))
-        entity-map        (get-in db-without-entity (butlast path))]
-    (if (or (nil? entity-map) (empty? entity-map))
-      (update-in db-without-entity (butlast (butlast path)) dissoc (last (butlast path)))
-      db-without-entity)))
+  (remove-entity-or-ref db entity-name entity))
+
+
+(s/fdef remove-entity-by-ref
+  :args (s/cat :db ::specs.v1/entitydb
+               :ref ::specs.v1/ref)
+  :fn   (fn [{:keys [args ret]}]
+          (not-any? (fn [[entity-name entities]]
+                      (contains? entities (get-in args [:ref :workflo/id])))
+                    (get ret :workflo.entitydb.v1/data)))
+  :ret  ::specs.v1/entitydb)
+
+
+(defn remove-entity-by-ref
+  [db ref]
+  (let [entity-names (->> (get db :workflo.entitydb.v1/data) (keys))]
+    (reduce (fn [db entity-name]
+              (remove-entity-or-ref db entity-name ref))
+            db entity-names)))
 
 
 (s/fdef remove-entities
