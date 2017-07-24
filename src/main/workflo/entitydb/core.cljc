@@ -4,7 +4,8 @@
             [workflo.entitydb.specs.v1 :as specs.v1]
             [workflo.entitydb.util.entities :as entities]
             [workflo.entitydb.util.identity :as identity]
-            [workflo.entitydb.util.operations :as ops]))
+            [workflo.entitydb.util.operations :as ops]
+            [workflo.entitydb.util.type-map :as type-map]))
 
 
 ;;;; Aliases for internal utilities to make them part of the core API
@@ -13,6 +14,11 @@
 (def make-id
   "Alias for `workflo.entitydb.util.identity/make-id`."
   identity/make-id)
+
+
+(def type-map-from-registered-entities
+  "Alias for `workflo.entitydb.util.type-map/type-map-from-registered-entities`."
+  type-map/type-map-from-registered-entities)
 
 
 ;;;; Create a db
