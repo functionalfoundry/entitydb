@@ -53,11 +53,27 @@
   (reduce #(add-entity %1 entity-name %2) db entities))
 
 
+(s/fdef default-merge
+  :args (s/cat :entity-1 ::specs.v1/entity
+               :entity-2 ::specs.v1/entity-with-nilable-attributes)
+  :ret  (s/or :entity ::specs.v1/entity
+              :ref ::specs.v1/ref))
+
+
+(defn default-merge
+  [entity-1 entity-2]
+  (reduce (fn [entity-1 [k v]]
+            (if (nil? v)
+              (dissoc entity-1 k)
+              (assoc entity-1 k v)))
+          entity-1 entity-2))
+
+
 (s/fdef update-entity
   :args (s/cat :db ::specs.v1/entitydb
                :entity-name keyword?
                :entity ::specs.v1/entity
-               :merge-fn (s/with-gen fn? #(gen/return (comp last vector))))
+               :merge-fn (s/? (s/with-gen fn? #(gen/return default-merge))))
   :fn   (fn [{:keys [args ret]}]
           (let [out-db      ret
                 entity-name (get args :entity-name)
