@@ -52,6 +52,48 @@
           (empty-db) entities))
 
 
+;;;; Accessing db contents
+
+
+(s/fdef entity-map
+  :args (s/cat :db ::specs.v1/entitydb
+               :entity-name ::specs.v1/entity-name)
+  :fn   (fn [{:keys [args ret]}]
+          (= (second ret)
+             (get-in (get args :db)
+                     [:workflo.entitydb.v1/data
+                      (get args :entity-name)])))
+  :ret  (s/or :name-exists ::specs.v1/entity-map
+              :name-doesnt-exist nil?))
+
+
+(defn entity-map
+  [db entity-name]
+  (get-in db [:workflo.entitydb.v1/data entity-name]))
+
+
+(s/fdef get-by-id
+  :args (s/cat :db ::specs.v1/entitydb
+               :entity-name ::specs.v1/entity-name
+               :id ::specs.v1/entity-id)
+  :fn   (fn [{:keys [args ret]}]
+          (= (second ret)
+             (get-in (get args :db)
+                     [:workflo.entitydb.v1/data
+                      (get args :entity-name)
+                      (get args :id)])))
+  :ret  (s/or :found ::specs.v1/entity
+              :not-found nil?))
+
+
+(defn get-by-id
+  [db entity-name id]
+  (get-in db [:workflo.entitydb.v1/data entity-name id]))
+
+
+;;;; Merge dbs
+
+
 (s/fdef merge-dbs
   :args (s/cat :db1 ::specs.v1/entitydb
                :db2 ::specs.v1/entitydb)
@@ -73,6 +115,9 @@
   :ret ::specs.v1/entitydb)
 
 
+;;;; Merge entities
+
+
 (defn merge-entities
   [db entities type-map merge-fn]
   (let [all-entities (-> entities
@@ -82,6 +127,9 @@
               (let [entity-name (entities/entity-name entity type-map)]
                 (ops/update-entity db entity-name entity merge-fn)))
             db all-entities)))
+
+
+;;;; Flatten entities in the database
 
 
 (s/fdef flattened-data
