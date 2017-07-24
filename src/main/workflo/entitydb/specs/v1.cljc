@@ -18,7 +18,11 @@
            #(= (count %) 32))
     #(s/gen #{"596e2b0e7ca846ed9508775ebe6f3541"
               "596e2b0e9b814772aabf6a997273b3ed"
-              "596e2b0e679e46aea7388db22ccd4b57"})))
+              "596e2b0e679e46aea7388db22ccd4b57"
+              "596e2b0e679e46aea7388db22ccd4b58"
+              "596e2b0e679e46aea7388db22ccd4b59"
+              "596e2b0e679e46aea7388db22ccd4b5a"
+              "596e2b0e679e46aea7388db22ccd4b5b"})))
 
 
 (s/def :workflo/id
@@ -37,8 +41,17 @@
   (s/and any? #(not (nil? %))))
 
 
+(s/def ::nilable-entity-attribute-value
+  (s/nilable any?))
+
+
 (s/def ::entity-attribute-value-map
   (s/map-of ::entity-attribute-name ::entity-attribute-value
+            :min-count 2
+            :gen-max 10))
+
+(s/def ::entity-attribute-value-map-with-nilable-attributes
+  (s/map-of ::entity-attribute-name ::nilable-entity-attribute-value
             :min-count 2
             :gen-max 10))
 
@@ -49,6 +62,15 @@
     #(gen/fmap (fn [entity]
                  (assoc entity :workflo/id (gen/generate (s/gen ::entity-id))))
                (s/gen ::entity-attribute-value-map))))
+
+
+(s/def ::entity-with-nilable-attributes
+  (s/with-gen
+    (s/and ::entity-attribute-value-map-with-nilable-attributes
+           (s/keys :req [:workflo/id]))
+    #(gen/fmap (fn [entity]
+                 (assoc entity :workflo/id (gen/generate (s/gen ::entity-id))))
+               (s/gen ::entity-attribute-value-map-with-nilable-attributes))))
 
 
 (s/def ::entities
@@ -119,7 +141,7 @@
 
 (s/def ::type-map
   (s/with-gen
-    (s/map-of ::entity-attribute-name ::entity-name :min-count 1)
+    (s/map-of ::entity-attribute-name ::entity-name)
     #(s/gen #{{:project/name :project
                :team/name :team
                :team/users :team
