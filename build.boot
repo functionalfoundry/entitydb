@@ -20,7 +20,10 @@
                  [org.clojure/test.check "0.9.0" :scope "test"]
                  [inflections "0.13.0"]
                  [org.clojure/clojure "1.9.0-alpha17"]
-                 [org.clojure/clojurescript "1.9.671"]])
+                 [org.clojure/clojurescript "1.9.671"]
+
+                 ;; Workflo dependencies
+                 [workflo/macros "0.2.58"]])
 
 
 (require '[adzerk.boot-cljs :refer [cljs]]
