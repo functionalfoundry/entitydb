@@ -137,7 +137,7 @@
   ([db entity-name entity merge-fn]
    (let [path (entity-path entity entity-name)]
      (-> db
-         (update-in path merge-fn (entities/refify-entity entity))
+         (update-in path (comp entities/refify-entity merge-fn) entity)
          (remove-at-path-if-ref path)))))
 
 
