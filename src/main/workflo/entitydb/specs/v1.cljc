@@ -1,6 +1,7 @@
 (ns workflo.entitydb.specs.v1
   (:require [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]))
+            [clojure.spec.gen.alpha :as gen]
+            [workflo.macros.specs.types :as types]))
 
 
 ;;;; Data
@@ -13,20 +14,7 @@
 
 
 (s/def ::entity-id
-  (s/with-gen
-    (s/and string?
-           #(= (count %) 32))
-    #(s/gen #{"596e2b0e7ca846ed9508775ebe6f3541"
-              "596e2b0e9b814772aabf6a997273b3ed"
-              "596e2b0e679e46aea7388db22ccd4b57"
-              "596e2b0e679e46aea7388db22ccd4b58"
-              "596e2b0e679e46aea7388db22ccd4b59"
-              "596e2b0e679e46aea7388db22ccd4b5a"
-              "596e2b0e679e46aea7388db22ccd4b5b"})))
-
-
-(s/def :workflo/id
-  ::entity-id)
+  (s/and ::types/id ::types/unique-identity))
 
 
 (s/def ::entity-attribute-name
@@ -37,45 +25,87 @@
               :project/name})))
 
 
-(s/def ::entity-attribute-value
+(s/def ::strict-entity-attribute-value
+  (s/and any?
+         #(not (nil? %))
+         #(not (s/valid? ::entity %))))
+
+
+(s/def ::loose-entity-attribute-value
   (s/and any? #(not (nil? %))))
 
 
-(s/def ::nilable-entity-attribute-value
-  (s/nilable any?))
+(s/def ::nilable-loose-entity-attribute-value
+  (s/nilable ::loose-entity-attribute-value))
 
 
-(s/def ::entity-attribute-value-map
-  (s/map-of ::entity-attribute-name ::entity-attribute-value
+(s/def ::strict-entity-attribute-value-map
+  (s/map-of ::entity-attribute-name ::strict-entity-attribute-value
             :min-count 2
             :gen-max 10))
 
-(s/def ::entity-attribute-value-map-with-nilable-attributes
-  (s/map-of ::entity-attribute-name ::nilable-entity-attribute-value
+
+(s/def ::loose-entity-attribute-value-map
+  (s/map-of ::entity-attribute-name ::loose-entity-attribute-value
             :min-count 2
             :gen-max 10))
+
+
+(s/def ::nilable-loose-entity-attribute-value-map
+  (s/map-of ::entity-attribute-name ::nilable-loose-entity-attribute-value
+            :min-count 2
+            :gen-max 10))
+
+
+(s/def ::entity-attribute-names
+  (s/with-gen
+    (s/and (s/coll-of ::entity-attribute-name :min-count 2)
+           #(some #{:workflo/id} %))
+    #(gen/fmap (fn [names]
+                 (set (conj names :workflo/id)))
+               (s/gen (s/coll-of ::entity-attribute-name
+                                 :min-count 7
+                                 :distinct true)))))
 
 (s/def ::entity
   (s/with-gen
-    (s/and ::entity-attribute-value-map
+    (s/and ::strict-entity-attribute-value-map
            (s/keys :req [:workflo/id]))
     #(gen/fmap (fn [entity]
                  (assoc entity :workflo/id (gen/generate (s/gen ::entity-id))))
-               (s/gen ::entity-attribute-value-map))))
-
-
-(s/def ::entity-with-nilable-attributes
-  (s/with-gen
-    (s/and ::entity-attribute-value-map-with-nilable-attributes
-           (s/keys :req [:workflo/id]))
-    #(gen/fmap (fn [entity]
-                 (assoc entity :workflo/id (gen/generate (s/gen ::entity-id))))
-               (s/gen ::entity-attribute-value-map-with-nilable-attributes))))
+               (s/gen ::strict-entity-attribute-value-map))))
 
 
 (s/def ::entities
   (s/or :set (s/coll-of ::entity :kind set? :min-count 1 :gen-max 10)
         :vector (s/coll-of ::entity :kind vector? :min-count 1 :gen-max 10)))
+
+
+(s/def ::loose-entity
+  (s/with-gen
+    (s/and ::loose-entity-attribute-value-map
+           (s/keys :req [:workflo/id]))
+    #(gen/fmap (fn [entity]
+                 (assoc entity :workflo/id (gen/generate (s/gen ::entity-id))))
+               (s/gen ::loose-entity-attribute-value-map))))
+
+(s/def ::nilable-loose-entity
+  (s/with-gen
+    (s/and ::nilable-loose-entity-attribute-value-map
+           (s/keys :req [:workflo/id]))
+    #(gen/fmap (fn [entity]
+                 (assoc entity :workflo/id (gen/generate (s/gen ::entity-id))))
+               (s/gen ::nilable-loose-entity-attribute-value-map))))
+
+
+(s/def ::loose-entities
+  (s/or :set (s/coll-of ::loose-entity :kind set? :min-count 1 :gen-max 10)
+        :vector (s/coll-of ::loose-entity :kind vector? :min-count 1 :gen-max 10)))
+
+
+(s/def ::nilable-loose-entities
+  (s/or :set (s/coll-of ::nilable-loose-entity :kind set? :min-count 1 :gen-max 10)
+        :vector (s/coll-of ::nilable-loose-entity :kind vector? :min-count 1 :gen-max 10)))
 
 
 (s/def ::refified-entity
