@@ -107,26 +107,28 @@
           (get db2 :workflo.entitydb.v1/data)))
 
 
-(s/fdef merge-entities
-  :args (s/cat :db ::specs.v1/entitydb
-               :entities ::specs.v1/entities
-               :type-map ::specs.v1/type-map
-               :merge-fn (s/with-gen fn? #(gen/return (comp last vector))))
-  :ret ::specs.v1/entitydb)
-
-
 ;;;; Merge entities
 
 
+(s/fdef merge-entities
+  :args (s/cat :db ::specs.v1/entitydb
+               :entities ::specs.v1/loose-entities
+               :type-map ::specs.v1/type-map
+               :merge-fn (s/? (s/with-gen fn? #(gen/return (comp last vector)))))
+  :ret ::specs.v1/entitydb)
+
+
 (defn merge-entities
-  [db entities type-map merge-fn]
-  (let [all-entities (-> entities
-                         (entities/flatten-entities)
-                         (entities/dedupe-entities merge-fn))]
-    (reduce (fn [db entity]
-              (let [entity-name (entities/entity-name entity type-map)]
-                (ops/update-entity db entity-name entity merge-fn)))
-            db all-entities)))
+  ([db entities type-map]
+   (merge-entities db entities type-map ops/default-merge))
+  ([db entities type-map merge-fn]
+   (let [all-entities (-> entities
+                          (entities/flatten-entities)
+                          (entities/dedupe-entities merge-fn))]
+     (reduce (fn [db entity]
+               (let [entity-name (entities/entity-name entity type-map)]
+                 (ops/update-entity db entity-name entity merge-fn)))
+             db all-entities))))
 
 
 ;;;; Flatten entities in the database
