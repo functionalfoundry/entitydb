@@ -1,6 +1,9 @@
 (ns workflo.entitydb.core
   (:require [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
+            [workflo.macros.entity :refer [memoized-entity-attrs
+                                           registered-entities]]
+            [workflo.macros.entity.schema :refer [non-persistent-key?]]
             [workflo.entitydb.specs.v1 :as specs.v1]
             [workflo.entitydb.util.entities :as entities]
             [workflo.entitydb.util.identity :as identity]
@@ -50,6 +53,75 @@
               (assoc-in db [:workflo.entitydb.v1/data entity-name (get entity :workflo/id)] entity)
               db))
           (empty-db) entities))
+
+
+;;;; Validating dbs
+
+
+(defn valid-db?
+  [db]
+  (s/valid? ::specs.v1/entitydb db))
+
+
+;;;; Persisting a db
+
+
+(s/fdef persistable-entity
+  :args (s/cat :entity ::specs.v1/entity
+               :attribute-names ::specs.v1/entity-attribute-names)
+  :ret  ::specs.v1/entity)
+
+
+(defn persistable-entity
+  [entity attribute-names]
+  (reduce (fn [entity-out [k v]]
+            (cond-> entity-out
+              (some #{k} attribute-names) (assoc k v)))
+          {} entity))
+
+
+(s/fdef persistable-entity-map
+  :args (s/cat :entity-map ::specs.v1/entity-map
+               :attribute-names ::specs.v1/entity-attribute-names)
+  :ret ::specs.v1/entity-map)
+
+
+(defn persistable-entity-map
+  [entity-map attribute-names]
+  (reduce (fn [map-out [entity-id entity]]
+            (assoc map-out entity-id
+                   (persistable-entity entity attribute-names)))
+          {} entity-map))
+
+
+(s/fdef persistable-db
+  :args (s/cat :db ::specs.v1/entitydb
+               :entity-names (s/coll-of ::specs.v1/entity-name :min-count 1)
+               :attribute-names ::specs.v1/entity-attribute-names)
+  :ret ::specs.v1/entitydb)
+
+
+(defn persistable-db
+  [db entity-names attribute-names]
+  {:workflo.entitydb.v1/data
+   (reduce (fn [db-out [entity-name entity-map]]
+             (cond-> db-out
+               (some #{entity-name} entity-names)
+               (assoc entity-name (persistable-entity-map entity-map attribute-names))))
+           {} (get db :workflo.entitydb.v1/data))})
+
+
+(defn persistable-db-for-registered-entities
+  [db]
+  (let [entities        (remove (comp (fn [hints]
+                                        (some #{:non-persistent} hints))
+                                      :hints)
+                                (vals (registered-entities)))
+        entity-names    (map (comp keyword :name) entities)
+        attribute-names (into #{} (comp (mapcat memoized-entity-attrs)
+                                        (remove non-persistent-key?))
+                              entities)]
+    (persistable-db db entity-names attribute-names)))
 
 
 ;;;; Accessing db contents
