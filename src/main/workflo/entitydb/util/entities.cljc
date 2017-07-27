@@ -130,7 +130,7 @@
 
 
 (s/fdef refify-entity
-  :args (s/cat :entity ::specs.v1/entity)
+  :args (s/cat :entity ::specs.v1/loose-entity)
   :fn   (fn [{:keys [args ret]}]
           (let [in-entity  (get args :entity)
                 out-entity ret]
@@ -162,7 +162,7 @@
 
 
 (s/fdef refify-entities
-  :args (s/cat :entities ::specs.v1/entities)
+  :args (s/cat :entities ::specs.v1/loose-entities)
   :ret  ::specs.v1/entities)
 
 
@@ -221,15 +221,15 @@
 
 (s/def :workflo.entitydb.extract-references/entity ::specs.v1/refified-entity)
 (s/def :workflo.entitydb.extract-references/references
-  (s/or :entities ::specs.v1/entities
+  (s/or :entities ::specs.v1/loose-entities
         :empty-set ::empty-set
         :empty-vector ::empty-vector))
 
 
 (s/fdef extract-references
-  :args (s/cat :entity ::specs.v1/entity)
-  :ret (s/keys :req-un [:workflo.entitydb.extract-references/entity
-                        :workflo.entitydb.extract-references/references]))
+  :args (s/cat :entity ::specs.v1/loose-entity)
+  :ret  (s/keys :req-un [:workflo.entitydb.extract-references/entity
+                         :workflo.entitydb.extract-references/references]))
 
 
 (defn extract-references [entity]
@@ -257,8 +257,8 @@
 
 
 (s/fdef flatten-entities
-        :args (s/cat :entities ::specs.v1/entities)
-        :ret ::specs.v1/refified-entities)
+  :args (s/cat :entities ::specs.v1/loose-entities)
+  :ret  ::specs.v1/refified-entities)
 
 
 (defn flatten-entities
@@ -279,7 +279,7 @@
 (s/fdef dedupe-entities
   :args (s/cat :entities ::specs.v1/entities
                :merge-fn (s/with-gen fn? #(gen/return (comp last vector))))
-  :ret ::specs.v1/entities)
+  :ret  ::specs.v1/entities)
 
 
 (defn dedupe-entities
