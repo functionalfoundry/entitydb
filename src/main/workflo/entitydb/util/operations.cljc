@@ -15,7 +15,7 @@
 
 
 (s/fdef entity-path
-  :args (s/cat :entity-or-ref (s/or :entity ::specs.v1/entity
+  :args (s/cat :entity-or-ref (s/or :entity ::specs.v1/nilable-loose-entity
                                     :ref ::specs.v1/ref)
                :entity-name ::specs.v1/entity-name)
   :ret  ::entity-path)
@@ -100,8 +100,9 @@
 
 
 (s/fdef default-merge
-  :args (s/cat :entity-1 ::specs.v1/entity
-               :entity-2 ::specs.v1/entity-with-nilable-attributes)
+  :args (s/cat :entity-1 (s/or :entity ::specs.v1/entity
+                               :nil nil?)
+               :entity-2 ::specs.v1/entity)
   :ret  (s/or :entity ::specs.v1/entity
               :ref ::specs.v1/ref))
 
