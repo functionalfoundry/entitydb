@@ -172,11 +172,16 @@
             (assoc out k
                    (cond
                      ;; Single reference attribute
-                     (entity? v {:use-spec? false})
+                     (and (map? v)
+                          (contains? v :workflo/id))
                      (entity->ref v)
 
                      ;; Multi-reference attribute
-                     (entities? v {:use-spec? false})
+                     (and (coll? v)
+                          (every? (fn [v*]
+                                    (and (map? v*)
+                                         (contains? v* :workflo/id)))
+                                  v))
                      (walk entity->ref identity v)
 
                      ;; Other attribute
@@ -257,12 +262,12 @@
         entity*    (transient entity)]
     (doseq [[k v] entity]
       (cond
-        (entity? v {:use-spec? true})
+        (entity? v {:use-spec? false})
         (do
           (conj! references v)
           (assoc! entity* k (entity->ref v)))
 
-        (entities? v {:use-spec? true})
+        (entities? v {:use-spec? false})
         (do
           (doseq [other v]
             (conj! references other))
@@ -297,9 +302,9 @@
 
 
 (s/fdef dedupe-entities
-  :args (s/cat :entities ::specs.v1/entities
+  :args (s/cat :entities ::specs.v1/loose-entities
                :merge-fn (s/with-gen fn? #(gen/return (comp last vector))))
-  :ret  ::specs.v1/entities)
+  :ret  ::specs.v1/loose-entities)
 
 
 (defn dedupe-entities
