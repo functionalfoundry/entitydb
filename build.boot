@@ -23,7 +23,7 @@
                  [org.clojure/clojurescript "1.9.671"]
 
                  ;; Workflo dependencies
-                 [workflo/macros "0.2.58"]])
+                 [workflo/macros "0.2.60"]])
 
 
 (require '[adzerk.boot-cljs :refer [cljs]]
