@@ -4,7 +4,7 @@
   "license": "MIT",
   "main": "workflo-entitydb",
   "scripts": {
-    "build-cljs": "shadow-cljs compile library",
+    "build-cljs": "shadow-cljs release library",
     "prepublish": "npm run build-cljs"
   },
   "dependencies": {
