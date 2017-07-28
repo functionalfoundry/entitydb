@@ -1,6 +1,6 @@
 {
   "name": "workflo-entitydb",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "license": "MIT",
   "main": "src/workflo-entitydb.js",
   "scripts": {
