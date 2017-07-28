@@ -2,6 +2,7 @@
   "name": "workflo-entitydb",
   "version": "0.1.0",
   "license": "MIT",
+  "main": "workflo-entitydb",
   "scripts": {
     "build-cljs": "shadow-cljs compile library",
     "prepublish": "npm run build-cljs"
