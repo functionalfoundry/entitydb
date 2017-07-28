@@ -28,15 +28,14 @@
 (s/def ::strict-entity-attribute-value
   (s/and any?
          #(not (nil? %))
-         #(not (s/valid? ::entity %))))
+         #(or (and (map? %) (empty? %))
+              (not (s/valid? ::entity %)))
+         #(or (and (coll? %) (empty? %))
+              (not (s/valid? ::entities %)))))
 
 
 (s/def ::loose-entity-attribute-value
   (s/and any? #(not (nil? %))))
-
-
-(s/def ::nilable-loose-entity-attribute-value
-  (s/nilable ::loose-entity-attribute-value))
 
 
 (s/def ::strict-entity-attribute-value-map
@@ -47,12 +46,6 @@
 
 (s/def ::loose-entity-attribute-value-map
   (s/map-of ::entity-attribute-name ::loose-entity-attribute-value
-            :min-count 2
-            :gen-max 10))
-
-
-(s/def ::nilable-loose-entity-attribute-value-map
-  (s/map-of ::entity-attribute-name ::nilable-loose-entity-attribute-value
             :min-count 2
             :gen-max 10))
 
@@ -72,13 +65,13 @@
     (s/and ::strict-entity-attribute-value-map
            (s/keys :req [:workflo/id]))
     #(gen/fmap (fn [entity]
-                 (assoc entity :workflo/id (gen/generate (s/gen ::entity-id))))
+                 (assoc entity :workflo/id (gen/generate (s/gen :workflo/id))))
                (s/gen ::strict-entity-attribute-value-map))))
 
 
 (s/def ::entities
-  (s/or :set (s/coll-of ::entity :kind set? :min-count 1 :gen-max 10)
-        :vector (s/coll-of ::entity :kind vector? :min-count 1 :gen-max 10)))
+  (s/or :set (s/coll-of ::entity :kind set? :gen-max 10)
+        :vector (s/coll-of ::entity :kind vector? :gen-max 10)))
 
 
 (s/def ::loose-entity
@@ -89,37 +82,10 @@
                  (assoc entity :workflo/id (gen/generate (s/gen ::entity-id))))
                (s/gen ::loose-entity-attribute-value-map))))
 
-(s/def ::nilable-loose-entity
-  (s/with-gen
-    (s/and ::nilable-loose-entity-attribute-value-map
-           (s/keys :req [:workflo/id]))
-    #(gen/fmap (fn [entity]
-                 (assoc entity :workflo/id (gen/generate (s/gen ::entity-id))))
-               (s/gen ::nilable-loose-entity-attribute-value-map))))
-
 
 (s/def ::loose-entities
-  (s/or :set (s/coll-of ::loose-entity :kind set? :min-count 1 :gen-max 10)
-        :vector (s/coll-of ::loose-entity :kind vector? :min-count 1 :gen-max 10)))
-
-
-(s/def ::nilable-loose-entities
-  (s/or :set (s/coll-of ::nilable-loose-entity :kind set? :min-count 1 :gen-max 10)
-        :vector (s/coll-of ::nilable-loose-entity :kind vector? :min-count 1 :gen-max 10)))
-
-
-(s/def ::refified-entity
-  (s/and ::entity
-         (fn [entity]
-           (every? (fn [val]
-                     (and (not (s/valid? ::entity val))
-                          (not (s/valid? ::entities val))))
-                   (vals entity)))))
-
-
-(s/def ::refified-entities
-  (s/or :set (s/coll-of ::refified-entity :kind set? :min-count 1 :gen-max 10)
-        :vector (s/coll-of ::refified-entity :kind vector? :min-count 1 :gen-max 10)))
+  (s/or :set (s/coll-of ::loose-entity :kind set? :gen-max 10)
+        :vector (s/coll-of ::loose-entity :kind vector? :gen-max 10)))
 
 
 (s/def ::ref
@@ -127,13 +93,13 @@
 
 
 (s/def ::refs
-  (s/or :set (s/coll-of ::ref :kind set? :min-count 1 :gen-max 10)
-        :vector (s/coll-of ::ref :kind vector? :min-count 1 :gen-max 10)))
+  (s/or :set (s/coll-of ::ref :kind set? :gen-max 10)
+        :vector (s/coll-of ::ref :kind vector? :gen-max 10)))
 
 
 (s/def ::entity-map
   (s/with-gen
-    (s/and (s/map-of ::entity-id ::entity :min-count 1 :gen-max 10)
+    (s/and (s/map-of ::entity-id ::entity :gen-max 10)
            (s/every entity-id-matches-entity-workflo-id?))
     #(gen/fmap (fn [entities]
                  (into {} (map (juxt :workflo/id identity)) entities))
