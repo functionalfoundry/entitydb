@@ -28,9 +28,12 @@
 (s/def ::strict-entity-attribute-value
   (s/and any?
          #(not (nil? %))
-         #(or (and (map? %) (empty? %))
+         #(or (and (map? %)
+                   (or (empty? %)
+                       (not (contains? % :workflo/id))))
               (not (s/valid? ::entity %)))
-         #(or (and (coll? %) (empty? %))
+         #(or (and (coll? %)
+                   (empty? %))
               (not (s/valid? ::entities %)))))
 
 
