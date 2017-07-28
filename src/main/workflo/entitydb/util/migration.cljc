@@ -50,7 +50,7 @@
             (case (first step)
               :update  (let [[_ entity] step]
                          (if-some [entity-name (entities/entity-name entity type-map)]
-                           (ops/update-entity db entity-name entity)
+                           (ops/update-entity db entity-name entity ops/default-merge)
                            (throw (ex-info "Failed to update unrecognizable entity"
                                            {:entity entity}))))
               :replace (let [[_ old-entity new-entity] step]
