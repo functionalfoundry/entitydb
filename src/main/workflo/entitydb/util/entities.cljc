@@ -303,15 +303,17 @@
 
 (s/fdef dedupe-entities
   :args (s/cat :entities ::specs.v1/loose-entities
-               :merge-fn (s/with-gen fn? #(gen/return (comp last vector))))
+               :merge-fn (s/? (s/with-gen fn? #(gen/return (comp last vector)))))
   :ret  ::specs.v1/loose-entities)
 
 
 (defn ^:export dedupe-entities
-  [entities merge-fn]
-  (into [] (map (fn [duplicates]
-                  (reduce merge-fn (first duplicates) (rest duplicates))))
-        (vals (group-by :workflo/id entities))))
+  ([entities]
+   (dedupe-entities entities merge))
+  ([entities merge-fn]
+   (into [] (map (fn [duplicates]
+                   (reduce merge-fn (first duplicates) (rest duplicates))))
+         (vals (group-by :workflo/id entities)))))
 
 
 ;;;; Type deduction
