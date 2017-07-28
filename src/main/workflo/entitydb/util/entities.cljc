@@ -135,7 +135,7 @@
               use-spec? true}}]
    (and (or (set? x)
             (vector? x))
-        (every? #(entity? % {:loose? loose? :use-spec use-spec?})
+        (every? #(entity? % {:loose? loose? :use-spec? use-spec?})
                 (cond->> x
                   sample? (take 2))))))
 
