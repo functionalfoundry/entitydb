@@ -11,3 +11,6 @@ pom.xml.asc
 .lein-plugins/
 .lein-failures
 .nrepl-port
+js/target/
+js/*.js
+js/node_modules/
