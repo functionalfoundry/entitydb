@@ -15,7 +15,7 @@
 
 
 (s/fdef entity-path
-  :args (s/cat :entity-or-ref (s/or :entity ::specs.v1/nilable-loose-entity
+  :args (s/cat :entity-or-ref (s/or :entity ::specs.v1/loose-entity
                                     :ref ::specs.v1/ref)
                :entity-name ::specs.v1/entity-name)
   :ret  ::entity-path)
@@ -39,7 +39,8 @@
   [db path]
   (let [db-without-entity (update-in db (butlast path) dissoc (last path))
         entity-map        (get-in db-without-entity (butlast path))]
-    (if (or (nil? entity-map) (empty? entity-map))
+    (if (or (nil? entity-map)
+            (empty? entity-map))
       (update-in db-without-entity (butlast (butlast path)) dissoc (last (butlast path)))
       db-without-entity)))
 
@@ -102,8 +103,8 @@
 (s/fdef default-merge
   :args (s/cat :entity-1 (s/or :entity ::specs.v1/entity
                                :nil nil?)
-               :entity-2 ::specs.v1/entity)
-  :ret  (s/or :entity ::specs.v1/entity
+               :entity-2 ::specs.v1/loose-entity)
+  :ret  (s/or :entity ::specs.v1/loose-entity
               :ref ::specs.v1/ref))
 
 
@@ -119,7 +120,7 @@
 (s/fdef update-entity
   :args (s/cat :db ::specs.v1/entitydb
                :entity-name keyword?
-               :entity ::specs.v1/entity
+               :entity ::specs.v1/loose-entity
                :merge-fn (s/? (s/with-gen fn? #(gen/return default-merge))))
   :fn   (fn [{:keys [args ret]}]
           (let [out-db      ret
@@ -137,7 +138,10 @@
   ([db entity-name entity merge-fn]
    (let [path (entity-path entity entity-name)]
      (-> db
-         (update-in path (comp entities/refify-entity merge-fn) entity)
+         (update-in path (fn [entity-1 entity-2]
+                           (-> (merge-fn entity-1 entity-2)
+                               (entities/refify-entity)))
+                    entity)
          (remove-at-path-if-ref path)))))
 
 

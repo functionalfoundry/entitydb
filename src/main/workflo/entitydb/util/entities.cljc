@@ -9,8 +9,9 @@
 ;;;; Specs
 
 
-(s/def ::use-spec? boolean?)
+(s/def ::loose? boolean?)
 (s/def ::sample? boolean?)
+(s/def ::use-spec? boolean?)
 
 
 (s/def ::empty-set (s/and set? empty?))
@@ -46,7 +47,15 @@
                         :refs ::specs.v1/refs
                         :maps (s/coll-of map? :kind vector?)
                         :any any?))
-  :fn   (s/or :refs
+  :fn   (s/or :empty-entities
+              #(and (= :entities (get-in % [:args :x 0]))
+                    (empty? (get-in % [:args :x 1 1]))
+                    (= true (get % :ret)))
+              :empty-maps
+              #(and (= :maps (get-in % [:args :x 0]))
+                    (empty? (get-in % [:args :x 1]))
+                    (= true (get % :ret)))
+              :refs
               #(and (= :refs (get-in % [:args :x 0]))
                     (= true (get % :ret)))
               :not-refs
@@ -58,32 +67,39 @@
 (defn refs? [x]
   (and (or (set? x)
            (vector? x))
-       (and (not (empty? x)))
        (every? ref? x)))
 
 
 (s/fdef entity?
   :args (s/cat :x (s/or :entity ::specs.v1/entity
+                        :loose-entity ::specs.v1/loose-entity
                         :ref ::specs.v1/ref
                         :map map?
                         :any any?)
-               :opts (s/? (s/keys :opt-un [::use-spec?])))
+               :opts (s/? (s/keys :opt-un [::loose? ::use-spec?])))
   :fn   (s/or :entity
               #(and (= :entity (get-in % [:args :x 0]))
                     (= true (get % :ret)))
+              :loose-entity
+              #(and (= :loose-entity (get-in % [:args :x 0]))
+                    (= true (get % [:args :opts :use-spec?]))
+                    (= true (get % [:args :opts :loose?]))
+                    (= true (get % :ret)))
               :not-entity
-              #(and (not= :entity (get-in % [:args :x 0]))
-                    (= false (get % :ret))))
+              #(= false (get % :ret)))
   :ret  boolean?)
 
 
 (defn entity?
   ([x]
    (entity? x {:use-spec? true}))
-  ([x {:keys [use-spec?]
-       :or   {use-spec? true}}]
+  ([x {:keys [loose? use-spec?]
+       :or   {loose? false
+              use-spec? true}}]
    (if use-spec?
-     (s/valid? :workflo.entitydb.specs.v1/entity x)
+     (if loose?
+       (s/valid? :workflo.entitydb.specs.v1/loose-entity x)
+       (s/valid? :workflo.entitydb.specs.v1/entity x))
      (and (map? x)
           (contains? x :workflo/id)
           (> (count x) 1)))))
@@ -91,28 +107,35 @@
 
 (s/fdef entities?
   :args (s/cat :x (s/or :entities ::specs.v1/entities
+                        :loose-entities ::specs.v1/loose-entities
                         :refs ::specs.v1/refs
                         :maps (s/coll-of map? :kind vector?)
                         :any any?)
-               :opts (s/? (s/keys :opt-un [::sample? ::use-spec?])))
+               :opts (s/? (s/keys :opt-un [::loose? ::sample? ::use-spec?])))
   :fn   (s/or :entities
               #(and (= :entities (get-in % [:args :x 0]))
                     (= true (get % :ret)))
+              :loose-entities
+              #(and (= :loose-entities (get-in % [:args :x 0]))
+                    (or (and (= true (get-in % [:args :opts :use-spec?]))
+                             (= true (get-in % [:args :opts :loose?])))
+                        (= false (get-in % [:args :opts :use-spec?])))
+                    (= true (get % :ret)))
               :not-entities
-              #(and (not= :entities (get-in % [:args :x 0]))
-                    (= false (get % :ret))))
+              #(= false (get % :ret)))
   :ret  boolean?)
 
 
 (defn entities?
   ([x]
    (entities? x {:use-spec? true}))
-  ([x {:keys [sample? use-spec?]
-       :or   {sample? false use-spec? true}}]
+  ([x {:keys [loose? sample? use-spec?]
+       :or   {loose? false
+              sample? false
+              use-spec? true}}]
    (and (or (set? x)
             (vector? x))
-        (not (empty? x))
-        (every? #(entity? % {:use-spec use-spec?})
+        (every? #(entity? % {:loose? loose? :use-spec use-spec?})
                 (cond->> x
                   sample? (take 2))))))
 
@@ -121,7 +144,7 @@
 
 
 (s/fdef entity->ref
-  :args (s/cat :entity ::specs.v1/entity)
+  :args (s/cat :entity ::specs.v1/loose-entity)
   :ret  ::specs.v1/ref)
 
 
@@ -137,11 +160,11 @@
             (every? (fn [[k in-val]]
                       (let [out-val (get out-entity k)]
                         (cond
-                          (entity? in-val) (ref? out-val)
-                          (entities? in-val) (refs? out-val)
+                          (entity? in-val {:use-spec? false}) (ref? out-val)
+                          (entities? in-val {:use-spec? false}) (refs? out-val)
                           :else true)))
                     in-entity)))
-  :ret  ::specs.v1/refified-entity)
+  :ret  ::specs.v1/entity)
 
 
 (defn refify-entity [entity]
@@ -149,11 +172,11 @@
             (assoc out k
                    (cond
                      ;; Single reference attribute
-                     (entity? v)
+                     (entity? v {:use-spec? false})
                      (entity->ref v)
 
                      ;; Multi-reference attribute
-                     (entities? v)
+                     (entities? v {:use-spec? false})
                      (walk entity->ref identity v)
 
                      ;; Other attribute
@@ -184,7 +207,7 @@
 
                      ;; Single reference attribute
                      (or (ref? v)
-                         (entity? v))
+                         (entity? v {:use-spec? true :loose? true}))
                      (update v :workflo/id
                              (fn [id]
                                (or (get id-map (:workflo/id v))
@@ -192,7 +215,7 @@
 
                      ;; Many-references attribute
                      (or (refs? v)
-                         (entities? v))
+                         (entities? v {:use-spec? true :loose? true}))
                      (walk (fn [entity]
                              (update entity :workflo/id
                                      (fn [id]
@@ -219,16 +242,13 @@
 ;;;; Extracting references
 
 
-(s/def :workflo.entitydb.extract-references/entity ::specs.v1/refified-entity)
 (s/def :workflo.entitydb.extract-references/references
-  (s/or :entities ::specs.v1/loose-entities
-        :empty-set ::empty-set
-        :empty-vector ::empty-vector))
+  (s/or :entities ::specs.v1/loose-entities))
 
 
 (s/fdef extract-references
   :args (s/cat :entity ::specs.v1/loose-entity)
-  :ret  (s/keys :req-un [:workflo.entitydb.extract-references/entity
+  :ret  (s/keys :req-un [::specs.v1/entity
                          :workflo.entitydb.extract-references/references]))
 
 
@@ -237,12 +257,12 @@
         entity*    (transient entity)]
     (doseq [[k v] entity]
       (cond
-        (entity? v)
+        (entity? v {:use-spec? true})
         (do
           (conj! references v)
           (assoc! entity* k (entity->ref v)))
 
-        (entities? v)
+        (entities? v {:use-spec? true})
         (do
           (doseq [other v]
             (conj! references other))
@@ -258,7 +278,7 @@
 
 (s/fdef flatten-entities
   :args (s/cat :entities ::specs.v1/loose-entities)
-  :ret  ::specs.v1/refified-entities)
+  :ret  ::specs.v1/entities)
 
 
 (defn flatten-entities
