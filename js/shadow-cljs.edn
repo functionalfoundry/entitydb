@@ -1,0 +1,11 @@
+;; shadow-cljs configuration
+{:source-paths
+ ["../src/main"]
+
+ :dependencies
+ [[workflo/macros "0.2.60"]]
+
+ :builds
+ [{:id :library
+   :target :node-library
+   :output-to "src/workflo-entitydb.js"}]}

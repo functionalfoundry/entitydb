@@ -1,0 +1,12 @@
+{
+  "name": "workflo-entitydb",
+  "version": "0.1.0",
+  "license": "MIT",
+  "scripts": {
+    "build-cljs": "shadow-cljs compile library",
+    "prepublish": "npm build-cljs"
+  },
+  "dependencies": {
+    "shadow-cljs": "^0.18.5"
+  }
+}
