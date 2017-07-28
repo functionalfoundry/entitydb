@@ -218,3 +218,15 @@
   [db]
   (transduce (map second) merge {}
              (get db :workflo.entitydb.v1/data)))
+
+
+(s/fdef flattened-entities
+  :args (s/cat :db ::specs.v1/entitydb)
+  :ret  ::specs.v1/entities)
+
+
+(defn flattened-entities
+  [db]
+  (into #{} (comp (map second)
+                  (mapcat vals))
+        (get db :workflo.entitydb.v1/data)))
