@@ -71,7 +71,7 @@
   :ret ::specs.v1/entitydb)
 
 
-(defn add-entity
+(defn ^:export add-entity
   [db entity-name entity]
   (->> entity
        (entities/refify-entity)
@@ -95,7 +95,7 @@
   :ret ::specs.v1/entitydb)
 
 
-(defn add-entities
+(defn ^:export add-entities
   [db entity-name entities]
   (reduce #(add-entity %1 entity-name %2) db entities))
 
@@ -108,7 +108,7 @@
               :ref ::specs.v1/ref))
 
 
-(defn default-merge
+(defn ^:export default-merge
   [entity-1 entity-2]
   (reduce (fn [entity-1 [k v]]
             (if (nil? v)
@@ -132,7 +132,7 @@
   :ret ::specs.v1/entitydb)
 
 
-(defn update-entity
+(defn ^:export update-entity
   ([db entity-name entity]
    (update-entity db entity-name entity default-merge))
   ([db entity-name entity merge-fn]
@@ -180,7 +180,7 @@
   :ret ::specs.v1/entitydb)
 
 
-(defn remove-entity
+(defn ^:export remove-entity
   [db entity-name entity]
   (remove-entity-or-ref db entity-name entity))
 
@@ -195,7 +195,7 @@
   :ret  ::specs.v1/entitydb)
 
 
-(defn remove-entity-by-ref
+(defn ^:export remove-entity-by-ref
   [db ref]
   (let [entity-names (->> (get db :workflo.entitydb.v1/data) (keys))]
     (reduce (fn [db entity-name]
@@ -219,6 +219,6 @@
   :ret ::specs.v1/entitydb)
 
 
-(defn remove-entities
+(defn ^:export remove-entities
   [db entity-name entities]
   (reduce #(remove-entity %1 entity-name %2) db entities))

@@ -14,12 +14,12 @@
 ;;;; Aliases for internal utilities to make them part of the core API
 
 
-(def make-id
+(def ^:export make-id
   "Alias for `workflo.entitydb.util.identity/make-id`."
   identity/make-id)
 
 
-(def type-map-from-registered-entities
+(def ^:export type-map-from-registered-entities
   "Alias for `workflo.entitydb.util.type-map/type-map-from-registered-entities`."
   type-map/type-map-from-registered-entities)
 
@@ -32,7 +32,7 @@
   :ret ::specs.v1/entitydb)
 
 
-(defn empty-db
+(defn ^:export empty-db
   "Creates an empty entitydb."
   []
   {:workflo.entitydb.v1/data {}
@@ -45,7 +45,7 @@
   :ret  ::specs.v1/entitydb)
 
 
-(defn db-from-entities
+(defn ^:export db-from-entities
   "Creates an entitydb from a collection of entities."
   [entities type-map]
   (reduce (fn [db entity]
@@ -58,7 +58,7 @@
 ;;;; Validating dbs
 
 
-(defn valid-db?
+(defn ^:export valid-db?
   [db]
   (s/valid? ::specs.v1/entitydb db))
 
@@ -72,7 +72,7 @@
   :ret  ::specs.v1/entity)
 
 
-(defn persistable-entity
+(defn ^:export persistable-entity
   [entity attribute-names]
   (reduce (fn [entity-out [k v]]
             (cond-> entity-out
@@ -86,7 +86,7 @@
   :ret ::specs.v1/entity-map)
 
 
-(defn persistable-entity-map
+(defn ^:export persistable-entity-map
   [entity-map attribute-names]
   (reduce (fn [map-out [entity-id entity]]
             (assoc map-out entity-id
@@ -101,7 +101,7 @@
   :ret ::specs.v1/entitydb)
 
 
-(defn persistable-db
+(defn ^:export persistable-db
   [db entity-names attribute-names]
   {:workflo.entitydb.v1/data
    (reduce (fn [db-out [entity-name entity-map]]
@@ -111,7 +111,7 @@
            {} (get db :workflo.entitydb.v1/data))})
 
 
-(defn persistable-db-for-registered-entities
+(defn ^:export persistable-db-for-registered-entities
   [db]
   (let [entities        (remove (comp (fn [hints]
                                         (some #{:non-persistent} hints))
@@ -139,7 +139,7 @@
               :name-doesnt-exist nil?))
 
 
-(defn entity-map
+(defn ^:export entity-map
   [db entity-name]
   (get-in db [:workflo.entitydb.v1/data entity-name]))
 
@@ -158,7 +158,7 @@
               :not-found nil?))
 
 
-(defn get-by-id
+(defn ^:export get-by-id
   [db entity-name id]
   (get-in db [:workflo.entitydb.v1/data entity-name id]))
 
@@ -172,7 +172,7 @@
   :ret ::specs.v1/entitydb)
 
 
-(defn merge-dbs
+(defn ^:export merge-dbs
   [db1 db2]
   (update db1 :workflo.entitydb.v1/data
           (partial merge-with merge)
@@ -190,7 +190,7 @@
   :ret ::specs.v1/entitydb)
 
 
-(defn merge-entities
+(defn ^:export merge-entities
   ([db entities type-map]
    (merge-entities db entities type-map ops/default-merge))
   ([db entities type-map merge-fn]
@@ -212,7 +212,7 @@
              :empty-map #{{}}))
 
 
-(defn flattened-data
+(defn ^:export flattened-data
   "Returns a flattened representation (a map of entity IDs to the
    corresponding entities) of the entitydb data."
   [db]
@@ -225,7 +225,7 @@
   :ret  ::specs.v1/entities)
 
 
-(defn flattened-entities
+(defn ^:export flattened-entities
   [db]
   (into #{} (comp (map second)
                   (mapcat vals))

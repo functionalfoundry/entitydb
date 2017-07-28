@@ -54,7 +54,7 @@
               #(= (count %) 32)))
 
 
-(defn make-id
+(defn ^:export make-id
   "Returns an indexing-friendly, time-based unique entity ID."
   []
   (str/replace (str (squuid)) "-" ""))

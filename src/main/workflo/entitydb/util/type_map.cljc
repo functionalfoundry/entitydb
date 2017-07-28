@@ -28,7 +28,7 @@
   :ret ::specs.v1/type-map)
 
 
-(defn type-map-from-registered-entities
+(defn ^:export type-map-from-registered-entities
   []
   (let [attrs-by-entity  (attrs-by-entity (vals (registered-entities)))
         all-attrs        (into #{} cat (vals attrs-by-entity))

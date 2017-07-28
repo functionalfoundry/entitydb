@@ -4,7 +4,7 @@
             [workflo.entitydb.util.operations :as ops]))
 
 
-(defn migrate [db migration type-map]
+(defn ^:export migrate [db migration type-map]
   (letfn [(migrate-reference-attribute [v from-id to-id]
             (cond
               (entities/refs? v) (into (if (set? v) #{} [])

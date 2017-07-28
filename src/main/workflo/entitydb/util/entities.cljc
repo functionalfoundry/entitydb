@@ -35,7 +35,7 @@
   :ret  boolean?)
 
 
-(defn ref?
+(defn ^:export ref?
   ([x]
    (and (map? x)
         (contains? x :workflo/id)
@@ -64,7 +64,7 @@
   :ret  boolean?)
 
 
-(defn refs? [x]
+(defn ^:export refs? [x]
   (and (or (set? x)
            (vector? x))
        (every? ref? x)))
@@ -90,7 +90,7 @@
   :ret  boolean?)
 
 
-(defn entity?
+(defn ^:export entity?
   ([x]
    (entity? x {:use-spec? true}))
   ([x {:keys [loose? use-spec?]
@@ -126,7 +126,7 @@
   :ret  boolean?)
 
 
-(defn entities?
+(defn ^:export entities?
   ([x]
    (entities? x {:use-spec? true}))
   ([x {:keys [loose? sample? use-spec?]
@@ -148,7 +148,7 @@
   :ret  ::specs.v1/ref)
 
 
-(defn entity->ref [entity]
+(defn ^:export entity->ref [entity]
   (select-keys entity [:workflo/id]))
 
 
@@ -167,7 +167,7 @@
   :ret  ::specs.v1/entity)
 
 
-(defn refify-entity [entity]
+(defn ^:export refify-entity [entity]
   (reduce (fn [out [k v]]
             (assoc out k
                    (cond
@@ -194,14 +194,14 @@
   :ret  ::specs.v1/entities)
 
 
-(defn refify-entities [entities]
+(defn ^:export refify-entities [entities]
   (into [] (map refify-entity) entities))
 
 
 ;;;; Entity cloning
 
 
-(defn substitute-ref-ids [entity id-map]
+(defn- substitute-ref-ids [entity id-map]
   (reduce (fn [out [k v]]
             (assoc out k
                    (cond
@@ -238,7 +238,7 @@
   :ret  ::specs.v1/entities)
 
 
-(defn clone-entities [entities]
+(defn ^:export clone-entities [entities]
   (let [ids    (map :workflo/id entities)
         id-map (zipmap ids (repeatedly identity/make-id))]
     (into #{} (map #(substitute-ref-ids % id-map)) entities)))
@@ -257,7 +257,7 @@
                          :workflo.entitydb.extract-references/references]))
 
 
-(defn extract-references [entity]
+(defn ^:export extract-references [entity]
   (let [references (transient [])
         entity*    (transient entity)]
     (doseq [[k v] entity]
@@ -286,7 +286,7 @@
   :ret  ::specs.v1/entities)
 
 
-(defn flatten-entities
+(defn ^:export flatten-entities
   [in-entities]
   (let [out-entities (transient #{})]
     (loop [remaining in-entities]
@@ -307,7 +307,7 @@
   :ret  ::specs.v1/loose-entities)
 
 
-(defn dedupe-entities
+(defn ^:export dedupe-entities
   [entities merge-fn]
   (into [] (map (fn [duplicates]
                   (reduce merge-fn (first duplicates) (rest duplicates))))
@@ -317,6 +317,6 @@
 ;;;; Type deduction
 
 
-(defn entity-name
+(defn ^:export entity-name
   [entity type-map]
   (first (keep type-map (keys entity))))

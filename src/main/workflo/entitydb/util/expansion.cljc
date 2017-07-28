@@ -9,12 +9,12 @@
 (declare expand-refs)
 
 
-(defn expand-ref
+(defn ^:export expand-ref
   [ref flat-db]
   (get flat-db (get ref :workflo/id)))
 
 
-(defn expand-ref-or-refs
+(defn ^:export expand-ref-or-refs
   [ref-or-refs flat-db attrs]
   (cond
     (entities/refs? ref-or-refs) (->> ref-or-refs
@@ -27,7 +27,7 @@
     :else                        ref-or-refs))
 
 
-(defn expand-refs
+(defn ^:export expand-refs
   "Expands the refs of an entity by replacing them with the
    referenced entities. Only does this for the given attrs.
    Uses a flattened entitydb to resolve refs."
@@ -38,11 +38,11 @@
     (into {} (map maybe-expand-ref) entity)))
 
 
-(defn expand-entity
+(defn ^:export expand-entity
   [entity flat-db attrs-to-expand]
   (expand-refs entity flat-db attrs-to-expand))
 
 
-(defn expand-entities
+(defn ^:export expand-entities
   [entities flat-db attrs-to-expand]
   (into #{} (map #(expand-entity % flat-db attrs-to-expand)) entities))
