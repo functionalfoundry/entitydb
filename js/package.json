@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "build-cljs": "shadow-cljs compile library",
-    "prepublish": "npm build-cljs"
+    "prepublish": "npm run build-cljs"
   },
   "dependencies": {
     "shadow-cljs": "^0.18.5"
