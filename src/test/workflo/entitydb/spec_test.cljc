@@ -30,4 +30,4 @@
             (nil? (get result :failure))
             (str "\n"
                  "Symbol `" (get result :sym) "` failed its spec:\n"
-                 (with-out-str (pprint (stest/abbrev-result result))))))))))
+                 (with-out-str (pprint (:failure (stest/abbrev-result result)))))))))))
