@@ -8,6 +8,6 @@
  :builds
  [{:id :library
    :target :npm-module
-   :output-dir "src"
+   :output-dir "./"
    :output-to "src/workflo-entitydb.js"
    :exports {:empty-db workflo.entitydb.core/empty-db}}]}
