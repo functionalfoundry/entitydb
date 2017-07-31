@@ -140,6 +140,28 @@
                   sample? (take 2))))))
 
 
+;;;; Remove nil attributes
+
+
+(s/fdef remove-nil-attributes
+  :args (s/cat :m map?)
+  :fn   (fn [{:keys [args ret]}]
+          (and (= (keys (get args :m))
+                  (keys ret))
+               (every? (fn [k]
+                         (if (nil? (get-in args [:m k]))
+                           (not (contains? ret k))
+                           (= (get-in args [:m k])
+                              (get ret k))))
+                       (keys (get args :m)))))
+  :ret  (s/map-of any? (s/and any? #(not (nil? %)))))
+
+
+(defn remove-nil-attributes
+  [m]
+  (into {} (remove (comp nil? second)) m))
+
+
 ;;;; Refifying
 
 
