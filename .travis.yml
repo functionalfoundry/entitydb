@@ -1,4 +1,6 @@
 sudo: false
+env:
+  - BOOT_JVM_OPTIONS="-Xmx1024m -Xms256m -Xss1m"
 language: java
 script: boot test
 install:
