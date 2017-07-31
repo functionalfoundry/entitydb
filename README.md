@@ -1,5 +1,7 @@
 # workflo/entitydb
 
+[![Build Status](https://travis-ci.com/workfloapp/entitydb.svg?token=AA3567evFMiwgkoEqZxX&branch=master)](https://travis-ci.com/workfloapp/entitydb)
+
 **NOTE: Everything here is considered work in progress and subject to change.**
 
 Database for entities defined with `defentity` from `workflo/macros`.
