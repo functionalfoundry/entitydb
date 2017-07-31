@@ -1,6 +1,6 @@
 # workflo/entitydb
 
-[![Build Status](https://travis-ci.com/workfloapp/entitydb.svg?token=AA3567evFMiwgkoEqZxX&branch=master)](https://travis-ci.com/workfloapp/entitydb)
+[![Build Status](https://travis-ci.org/workfloapp/entitydb.svg?branch=master)](https://travis-ci.org/workfloapp/entitydb)
 
 **NOTE: Everything here is considered work in progress and subject to change.**
 
