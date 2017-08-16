@@ -23,14 +23,9 @@
         attrs-by-entity))
 
 
-(s/fdef type-map-from-registered-entities
-  :args nil?
-  :ret ::specs.v1/type-map)
-
-
-(defn ^:export type-map-from-registered-entities
-  []
-  (let [attrs-by-entity  (attrs-by-entity (vals (registered-entities)))
+(defn- type-map-from-entities*
+  [entities]
+  (let [attrs-by-entity  (attrs-by-entity (vals entities))
         all-attrs        (into #{} cat (vals attrs-by-entity))
         entities-by-attr (into {} (map (fn [attr]
                                          [attr (entities-for-attr attrs-by-entity attr)]))
@@ -39,3 +34,18 @@
                      (when (= 1 (count entity-names))
                        [attr (first entity-names)])))
           entities-by-attr)))
+
+
+(def ^:private type-map-from-entities (memoize type-map-from-entities*))
+
+
+(s/fdef type-map-from-registered-entities
+  :args nil?
+  :ret ::specs.v1/type-map)
+
+
+(defn ^:export type-map-from-registered-entities
+  "Returns a type map from all entities that are currently
+   registered with `workflo.macros.entity/defentity`."
+  []
+  (type-map-from-entities (registered-entities)))
