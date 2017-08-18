@@ -1,10 +1,11 @@
 (ns workflo.entitydb.util.migration
   (:require [workflo.entitydb.specs.v1 :as specs.v1]
             [workflo.entitydb.util.entities :as entities]
+            [workflo.entitydb.util.indexes :as indexes]
             [workflo.entitydb.util.operations :as ops]))
 
 
-(defn ^:export migrate [db migration type-map]
+(defn ^:export migrate [db db-config migration type-map]
   (letfn [(migrate-reference-attribute [v from-id to-id]
             (cond
               (entities/refs? v) (into (if (set? v) #{} [])
@@ -44,25 +45,32 @@
             (-> db
                 (migrate-references (get old-entity :workflo/id)
                                     (get new-entity :workflo/id))
-                (ops/remove-entity old-entity type-map)
-                (ops/add-entity (entities/entity-name new-entity type-map) new-entity)))
+                (ops/remove-entity db-config old-entity type-map)
+                (ops/add-entity db-config (entities/entity-name new-entity type-map) new-entity)))
           (migration-step [db step]
             (case (first step)
               :update  (let [[_ entity] step]
                          (if-some [entity-name (entities/entity-name entity type-map)]
-                           (ops/update-entity db entity-name entity ops/default-merge)
+                           (ops/update-entity db db-config entity-name entity ops/default-merge)
                            (throw (ex-info "Failed to update unrecognizable entity"
                                            {:entity entity}))))
               :replace (let [[_ old-entity new-entity] step]
                          (replace-entity db old-entity new-entity type-map))
               :add     (let [[_ entity] step]
                          (if-some [entity-name (entities/entity-name entity type-map)]
-                           (ops/add-entity db entity-name entity)
+                           (ops/add-entity db db-config entity-name entity)
                            (throw (ex-info "Failed to add unrecognizable entity"
                                            {:entity entity}))))
               :remove  (let [[_ entity] step]
                          (if-some [entity-name (entities/entity-name entity type-map)]
-                           (ops/remove-entity db entity-name entity)
+                           (ops/remove-entity db db-config entity-name entity)
                            (throw (ex-info "Failed to remove unrecognizable entity"
                                            {:entity entity}))))))]
-    (reduce migration-step db migration)))
+    (as-> db db'
+      ;; Migrate data in the entitydb
+      (reduce migration-step db' migration)
+
+      ;; Recreate indexes. Note: this is only necessary as there's no good
+      ;; solution to updating indexes when migrating references yet. We're
+      ;; doing this to keep indexes in sync but it's a little slow.
+      (indexes/recreate-indexes db' db-config))))
