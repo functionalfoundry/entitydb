@@ -7,6 +7,7 @@
             [workflo.entitydb.specs.v1 :as specs.v1]
             [workflo.entitydb.util.entities :as entities]
             [workflo.entitydb.util.identity :as identity]
+            [workflo.entitydb.util.indexes :as indexes]
             [workflo.entitydb.util.operations :as ops]
             [workflo.entitydb.util.type-map :as type-map]))
 
@@ -17,6 +18,11 @@
 (def ^:export make-id
   "Alias for `workflo.entitydb.util.identity/make-id`."
   identity/make-id)
+
+
+(def ^:export indexed-attributes-from-registered-entities
+  "Alias for `workflo.entitydb.util.indexes/indexed-attributes-from-registered-entities`."
+  indexes/indexed-attributes-from-registered-entities)
 
 
 (def ^:export type-map-from-registered-entities
@@ -40,19 +46,26 @@
 
 
 (s/fdef db-from-entities
-  :args (s/cat :entities ::specs.v1/entities
-               :type-map ::specs.v1/type-map)
+  :args (s/cat :db-config ::specs.v1/db-config
+               :entities ::specs.v1/entities)
   :ret  ::specs.v1/entitydb)
 
 
 (defn ^:export db-from-entities
   "Creates an entitydb from a collection of entities."
-  [entities type-map]
-  (reduce (fn [db entity]
-            (if-some [entity-name (entities/entity-name entity type-map)]
-              (assoc-in db [:workflo.entitydb.v1/data entity-name (get entity :workflo/id)] entity)
-              db))
-          (empty-db) entities))
+  [db-config entities]
+  (let [type-map (get db-config :type-map)]
+    (as-> (empty-db) db
+      ;; Populate the db
+      (reduce (fn [db entity]
+                (if-some [entity-name (entities/entity-name entity type-map)]
+                  (assoc-in db [:workflo.entitydb.v1/data entity-name
+                                (get entity :workflo/id)] entity)
+                  db))
+              db entities)
+
+      ;; Recreate indexes
+      (indexes/recreate-indexes db db-config))))
 
 
 ;;;; Validating dbs
@@ -89,8 +102,7 @@
 (defn ^:export persistable-entity-map
   [entity-map attribute-names]
   (reduce (fn [map-out [entity-id entity]]
-            (assoc map-out entity-id
-                   (persistable-entity entity attribute-names)))
+            (assoc map-out entity-id (persistable-entity entity attribute-names)))
           {} entity-map))
 
 
@@ -168,15 +180,18 @@
 
 (s/fdef merge-dbs
   :args (s/cat :db1 ::specs.v1/entitydb
-               :db2 ::specs.v1/entitydb)
+               :db2 ::specs.v1/entitydb
+               :db-config ::specs.v1/db-config)
   :ret ::specs.v1/entitydb)
 
 
 (defn ^:export merge-dbs
-  [db1 db2]
-  (update db1 :workflo.entitydb.v1/data
-          (partial merge-with merge)
-          (get db2 :workflo.entitydb.v1/data)))
+  [db1 db2 db-config]
+  (-> db1
+      (update :workflo.entitydb.v1/data
+              (partial merge-with merge)
+              (get db2 :workflo.entitydb.v1/data))
+      (indexes/recreate-indexes db-config)))
 
 
 ;;;; Merge entities
@@ -184,22 +199,22 @@
 
 (s/fdef merge-entities
   :args (s/cat :db ::specs.v1/entitydb
+               :db-config ::specs.v1/db-config
                :entities ::specs.v1/loose-entities
-               :type-map ::specs.v1/type-map
                :merge-fn (s/? (s/with-gen fn? #(gen/return (comp last vector)))))
   :ret ::specs.v1/entitydb)
 
 
 (defn ^:export merge-entities
-  ([db entities type-map]
-   (merge-entities db entities type-map ops/default-merge))
-  ([db entities type-map merge-fn]
+  ([db db-config entities]
+   (merge-entities db db-config entities ops/default-merge))
+  ([db db-config entities merge-fn]
    (let [all-entities (-> entities
                           (entities/flatten-entities)
                           (entities/dedupe-entities merge-fn))]
      (reduce (fn [db entity]
-               (let [entity-name (entities/entity-name entity type-map)]
-                 (ops/update-entity db entity-name entity merge-fn)))
+               (let [entity-name (entities/entity-name entity (get db-config :type-map))]
+                 (ops/update-entity db db-config entity-name entity merge-fn)))
              db all-entities))))
 
 
