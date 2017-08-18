@@ -2,7 +2,7 @@
 
 
 (def +project+ 'workflo/entitydb)
-(def +version+ "0.1.3")
+(def +version+ "0.1.4")
 
 
 (set-env!
