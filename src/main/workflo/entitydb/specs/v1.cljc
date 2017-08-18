@@ -136,7 +136,11 @@
           :opt [:workflo.entitydb.v1/indexes]))
 
 
-;;;; Schema
+;;;; Database configs
+
+(s/def ::indexed-attributes
+  (s/coll-of ::entity-attribute-name))
+
 
 (s/def ::type-map
   (s/with-gen
@@ -148,3 +152,8 @@
                :user/name :user
                :user/email :user
                :user/address :user}})))
+
+
+(s/def ::db-config
+  (s/keys :req-un [::indexed-attributes
+                   ::type-map]))
