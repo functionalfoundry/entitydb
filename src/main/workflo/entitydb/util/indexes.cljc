@@ -376,7 +376,7 @@
   :fn   (s/or
          :attribute-not-indexed
          (s/and
-          ;; The attribute is indexed
+          ;; The attribute is not indexed
           (fn [{:keys [args ret]}]
             (let [{:keys [db-config attr]} args]
               (not (some #{attr} (get db-config :indexed-attributes)))))
