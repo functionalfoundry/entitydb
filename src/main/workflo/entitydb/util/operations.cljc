@@ -41,7 +41,7 @@
 
 (defn- remove-entity-from-indexes
   [db db-config entity-name path]
-  (let [entity    (get-in db (conj path :workflo/id))
+  (let [entity    (get-in db path)
         typed-ref [entity-name (get entity :workflo/id)]]
     (reduce (fn [db [attr value]]
               (indexes/remove-eav-from-indexes db db-config typed-ref attr value))
