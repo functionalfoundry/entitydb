@@ -195,14 +195,16 @@
                    (cond
                      ;; Single reference attribute
                      (and (map? v)
-                          (contains? v :workflo/id))
+                          (contains? v :workflo/id)
+                          (>= (count v) 2))
                      (entity->ref v)
 
                      ;; Multi-reference attribute
                      (and (coll? v)
                           (every? (fn [v*]
                                     (and (map? v*)
-                                         (contains? v* :workflo/id)))
+                                         (contains? v* :workflo/id)
+                                         (>= (count v*) 2)))
                                   v))
                      (walk entity->ref identity v)
 
