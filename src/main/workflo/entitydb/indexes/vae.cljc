@@ -80,21 +80,24 @@
 
 (defn remove-eav
   [index typed-ref attr value]
-  (as-> index index
-    ;; Remove the typed ref from the index
-    (update-in index [value attr] disj typed-ref)
+  (if (and (get index value)
+           (get-in index [value attr]))
+    (as-> index index
+      ;; Remove the typed ref from the index
+      (update-in index [value attr] disj typed-ref)
 
-    ;; Make sure we don't leave an empty set of typed refs behind
-    (update index value (fn [attribute-entity-map]
-                          (cond-> attribute-entity-map
-                            (empty? (get attribute-entity-map attr))
-                            (dissoc attr))))
+      ;; Make sure we don't leave an empty set of typed refs behind
+      (update index value (fn [attribute-entity-map]
+                            (cond-> attribute-entity-map
+                              (empty? (get attribute-entity-map attr))
+                              (dissoc attr))))
 
-    ;; Make sure we also don't leave an empty attribute-entities map
-    ;; behind under the old value
-    (if (empty? (get index value))
-      (dissoc index value)
-      index)))
+      ;; Make sure we also don't leave an empty attribute-entities map
+      ;; behind under the old value
+      (if (empty? (get index value))
+        (dissoc index value)
+        index))
+    index))
 
 
 (s/fdef add-eav
