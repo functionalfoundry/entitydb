@@ -65,9 +65,14 @@
 
               ;; The attribute value is being changed in the entity:
               ;; Update the EAV triplet in indexes
-              :else
+              (not= new-value (get old-entity attr))
               (let [old-value (get old-entity attr)]
-                (conj eav-updates [:updated typed-ref attr old-value new-value]))))
+                (conj eav-updates [:updated typed-ref attr old-value new-value]))
+
+              ;; The attribute value remains unchanged:
+              ;; Do nothing
+              :else
+              eav-updates))
           [] new-entity))
 
 
