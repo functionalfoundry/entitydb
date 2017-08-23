@@ -9,7 +9,7 @@
             [workflo.entitydb.util.identity :as identity]
             [workflo.entitydb.util.indexes :as indexes]
             [workflo.entitydb.util.operations :as ops]
-            [workflo.entitydb.util.type-map :as type-map]))
+            [workflo.entitydb.util.schema :as schema]))
 
 
 ;;;; Aliases for internal utilities to make them part of the core API
@@ -20,14 +20,24 @@
   identity/make-id)
 
 
+(def ^:export entity-name
+  "Alias for `workflo.entitydb.util.entities/entity-name`."
+  entities/entity-name)
+
+
 (def ^:export indexed-attributes-from-registered-entities
-  "Alias for `workflo.entitydb.util.indexes/indexed-attributes-from-registered-entities`."
-  indexes/indexed-attributes-from-registered-entities)
+  "Alias for `workflo.entitydb.util.schema/indexed-attributes-from-registered-entities`."
+  schema/indexed-attributes-from-registered-entities)
 
 
 (def ^:export type-map-from-registered-entities
-  "Alias for `workflo.entitydb.util.type-map/type-map-from-registered-entities`."
-  type-map/type-map-from-registered-entities)
+  "Alias for `workflo.entitydb.util.schema/type-map-from-registered-entities`."
+  schema/type-map-from-registered-entities)
+
+
+(def ^:export db-config-from-registered-entities
+  "Alias for `workflo.entitydb.util.schema/db-config-from-registered-entities`."
+  schema/db-config-from-registered-entities)
 
 
 ;;;; Create a db
