@@ -41,7 +41,7 @@
 
 (defn- remove-entity-from-indexes
   [db db-config entity-name path]
-  (let [entity    (get-in db (conj path :workflo/id))
+  (let [entity    (get-in db path)
         typed-ref [entity-name (get entity :workflo/id)]]
     (reduce (fn [db [attr value]]
               (indexes/remove-eav-from-indexes db db-config typed-ref attr value))
@@ -65,9 +65,14 @@
 
               ;; The attribute value is being changed in the entity:
               ;; Update the EAV triplet in indexes
-              :else
+              (not= new-value (get old-entity attr))
               (let [old-value (get old-entity attr)]
-                (conj eav-updates [:updated typed-ref attr old-value new-value]))))
+                (conj eav-updates [:updated typed-ref attr old-value new-value]))
+
+              ;; The attribute value remains unchanged:
+              ;; Do nothing
+              :else
+              eav-updates))
           [] new-entity))
 
 
