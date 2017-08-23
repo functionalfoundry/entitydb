@@ -4,6 +4,7 @@
             [workflo.macros.entity :refer [memoized-entity-attrs
                                            registered-entities]]
             [workflo.macros.entity.schema :refer [non-persistent-key?]]
+            [workflo.entitydb.specs.indexes.common :as specs.indexes]
             [workflo.entitydb.specs.v1 :as specs.v1]
             [workflo.entitydb.util.entities :as entities]
             [workflo.entitydb.util.identity :as identity]
@@ -183,6 +184,25 @@
 (defn ^:export get-by-id
   [db entity-name id]
   (get-in db [:workflo.entitydb.v1/data entity-name id]))
+
+
+(s/fdef get-by-typed-ref
+  :args (s/cat :db ::specs.v1/entitydb
+               :typed-ref ::specs.indexes/typed-ref)
+  :fn   (fn [{:keys [args ret]}]
+          (= (second ret)
+             (get-in (get args :db)
+                     (cons :workflo.entitydb.v1/data
+                           (get args :typed-ref)))))
+  :ret  (s/or :found ::specs.v1/entity
+              :not-found nil?))
+
+
+(defn ^:export get-by-typed-ref
+  "Looks up an entity in the db given a typed ref. Returns
+   `nil` if no matching entity is found."
+  [db typed-ref]
+  (get-in db (cons :workflo.entitydb.v1/data typed-ref)))
 
 
 ;;;; Merge dbs
