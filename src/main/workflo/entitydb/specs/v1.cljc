@@ -126,6 +126,10 @@
   (s/map-of keyword? any? :gen-max 2))
 
 
+(s/def ::attribute-path
+  (s/coll-of ::entity-attribute-name :min-count 1 :gen-max 5))
+
+
 ;;;; entitydb v1
 
 
@@ -154,6 +158,29 @@
                :user/address :user}})))
 
 
+(s/def :entity-ref-info/source-entity ::entity-name)
+(s/def :entity-ref-info/target-entity ::entity-name)
+(s/def :entity-ref-info/many? boolean?)
+
+
+(s/def ::entity-ref-info
+  (s/keys :req-un [:entity-ref-info/source-entity
+                   :entity-ref-info/target-entity
+                   :entity-ref-info/many?]))
+
+
+(s/def ::entity-ref-attributes
+  (s/with-gen
+    (s/map-of ::entity-attribute-name ::entity-ref-info)
+    #(s/gen #{{:team/users {:source-entity :team
+                            :target-entity :user
+                            :many? true}
+               :team/project {:source-entity :team
+                              :target-entity :project
+                              :many? false}}})))
+
+
 (s/def ::db-config
   (s/keys :req-un [::indexed-attributes
-                   ::type-map]))
+                   ::type-map
+                   ::entity-ref-attributes]))
