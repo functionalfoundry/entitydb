@@ -21,53 +21,99 @@
          :spec ::specs.vae/index}})
 
 
-;;;; Obtain indexed attributes from entities
+;;;; Typed refs
 
 
-(s/def ::attribute-schema
-  (s/coll-of #{:bytes :keyword :string :boolean :long :bigint :float :double
-               :bigdec :instant :uuid :enum :ref :many :unique-value
-               :unique-identity :indexed :fulltext :nohistory :component}))
+(s/fdef typed-ref?
+  :args (s/cat :type-map ::specs.v1/type-map
+               :x (s/or :typed-ref ::specs.indexes/typed-ref
+                        :other any?))
+  :fn   (s/or :typed-ref
+              (s/and
+               ;; The input is a valid typed ref given the type map
+               (fn [{:keys [args]}]
+                 (let [{:keys [type-map x]} args]
+                   (let [[_ real-x] x]
+                     (and (s/valid? ::specs.indexes/typed-ref real-x)
+                          (some #{(first real-x)} (vals type-map))))))
 
+               ;; The result is true
+               (fn [{:keys [ret]}]
+                 (= true ret)))
 
+              :no-typed-ref
+              (s/and
+               ;; The input is not a valid typed ref given the type map
+               (fn [{:keys [args]}]
+                 (let [{:keys [type-map x]} args]
+                   (let [[_ real-x] x]
+                     (or (not (s/valid? ::specs.indexes/typed-ref real-x))
+                         (not (some #{(first real-x)} (vals type-map)))))))
 
-(s/fdef attribute-indexed?
-  :args (s/cat :attribute-with-schema (s/tuple ::specs.v1/entity-attribute-name
-                                               ::attribute-schema))
-  :fn   (fn [{:keys [args ret]}]
-          (if (some #{:indexed} (second (get args :attribute-with-schema)))
-            (= ret true)
-            (= ret false)))
+               ;; The result is false
+               (fn [{:keys [ret]}]
+                 (= false ret))))
   :ret  boolean?)
 
 
-(defn- attribute-indexed?
-  [[attribute-name attribute-schema]]
-  (boolean (some #{:indexed} attribute-schema)))
+(defn typed-ref?
+  [type-map x]
+  (boolean
+   (and (vector? x)
+        (= (count x) 2)
+        (keyword? (first x))
+        (string? (second x))
+        (some #{(first x)} (vals type-map)))))
 
 
-(defn- indexed-attributes-from-entities*
-  [entities]
-  (into #{} (comp (mapcat entity-schema)
-                  (filter attribute-indexed?)
-                  (map first))
-        (vals entities)))
+(s/fdef typed-refs?
+  :args (s/cat :type-map ::specs.v1/type-map
+               :coll (s/or :typed-refs ::specs.indexes/typed-refs
+                           :other (s/coll-of any?)))
+  :fn   (s/or
+         :typed-refs
+         (s/and
+          ;; The input collection is a collection of typed refs
+          (fn [{:keys [args ret]}]
+            (let [{:keys [type-map coll]} args]
+              (and (s/valid? ::specs.indexes/typed-refs (second coll))
+                   (every? #(typed-ref? type-map %) (second coll)))))
+
+          ;; The result is true
+          (fn [{:keys [args ret]}]
+            (= true ret)))
+
+         :no-typed-refs
+         (s/and
+          ;; The input collection is not a collection of typed refs
+          (fn [{:keys [args ret]}]
+            (let [{:keys [type-map coll]} args]
+              (or (not (s/valid? ::specs.indexes/typed-refs (second coll)))
+                  (some #(not (typed-ref? type-map %)) (second coll)))))
+
+          ;; The result is false
+          (fn [{:keys [args ret]}]
+            (= false ret))))
+  :ret  boolean?)
 
 
-(def ^:private indexed-attributes-from-entities
-  (memoize indexed-attributes-from-entities*))
+(defn typed-refs?
+  [type-map coll]
+  (and (not (empty? coll))
+       (every? #(typed-ref? type-map %) coll)))
 
 
-(s/fdef indexed-attributes-from-registered-entities
-  :args nil?
-  :ret ::specs.v1/indexed-attributes)
+(s/fdef typed-ref->ref
+  :args (s/cat :typed-ref ::specs.indexes/typed-ref)
+  :fn   (fn [{:keys [args ret]}]
+          (= (get ret :workflo/id)
+             (second (get args :typed-ref))))
+  :ret  ::specs.v1/ref)
 
 
-(defn indexed-attributes-from-registered-entities
-  "Returns a collection of indexed attributes from all entities that
-   are currently registered with `workflo.macros.entity/defentity`."
-  []
-  (indexed-attributes-from-entities (registered-entities)))
+(defn typed-ref->ref
+  [typed-ref]
+  {:workflo/id (second typed-ref)})
 
 
 (s/fdef recreate-index
