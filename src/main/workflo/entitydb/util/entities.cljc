@@ -343,6 +343,12 @@
 ;;;; Type deduction
 
 
+(s/fdef entity-name
+  :args (s/cat :entity ::specs.v1/loose-entity
+               :type-map ::specs.v1/type-map)
+  :ret  ::specs.v1/entity-name)
+
+
 (defn ^:export entity-name
   [entity type-map]
   (first (keep type-map (keys entity))))
