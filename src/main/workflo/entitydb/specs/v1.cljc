@@ -126,6 +126,10 @@
   (s/map-of keyword? any? :gen-max 2))
 
 
+(s/def ::attribute-path
+  (s/coll-of ::entity-attribute-name :min-count 1 :gen-max 5))
+
+
 ;;;; entitydb v1
 
 
