@@ -8,8 +8,8 @@
 
 (def check-opts
   {:clojure.spec.test.check/opts
-   {:num-tests 25
-    :max-size 25}})
+   {:num-tests 15
+    :max-size 15}})
 
 
 (defn- entitydb-sym? [sym]
