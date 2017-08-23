@@ -11,6 +11,9 @@
 (declare add-eav)
 
 
+;;;; Index creation
+
+
 (defn ^:export empty-index
   "Creates an empty VAE index."
   []
@@ -65,6 +68,9 @@
                     (empty-index) data))]
     (-> (empty-index)
         (populate-from-data data))))
+
+
+;;;; Index updates
 
 
 (s/fdef remove-eav
