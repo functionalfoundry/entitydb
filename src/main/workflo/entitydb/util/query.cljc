@@ -152,18 +152,13 @@
 (defn- resolve-attr-path-into-typed-refs
   [db db-config attr-path values]
   (reduce (fn [values attr]
-            (cond->> values
-              ;; Convert typed refs in the result to untyped refs
-              (indexes/typed-refs? (get db-config :type-map) values)
-              (into #{} (map indexes/typed-ref->ref))
-
-              ;; Generate a set of all attr/value combinations
-              true (into #{} (map (partial vector attr)))
-
-              ;; Resolve the all attr/value combinations into typed refs
-              true (into #{} (mapcat (fn [[attr value]]
-                                       (resolve-attribute-value-into-typed-refs
-                                        db db-config attr value))))))
+            (->> (cond->> values
+                   (indexes/typed-refs? (get db-config :type-map) values)
+                   (map indexes/typed-ref->ref))
+                 (mapcat (fn [value]
+                           (resolve-attribute-value-into-typed-refs
+                            db db-config attr value)))
+                 (set)))
           values (reverse attr-path)))
 
 
