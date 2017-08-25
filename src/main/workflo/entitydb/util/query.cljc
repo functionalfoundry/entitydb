@@ -181,5 +181,4 @@
    `values` when following the given attribute `path`."
   [db db-config path values]
   (->> (resolve-attr-path-into-typed-refs db db-config path values)
-       (into #{} (comp (map #(cons :workflo.entitydb.v1/data %))
-                       (map #(get-in db %))))))
+       (into #{} (map #(get-in db `[:workflo.entitydb.v1/data ~@%])))))
