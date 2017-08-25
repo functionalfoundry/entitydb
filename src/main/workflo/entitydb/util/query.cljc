@@ -152,14 +152,16 @@
 (defn- resolve-attr-path-into-typed-refs
   [db db-config attr-path values]
   (reduce (fn [values attr]
-            (->> (cond->> values
-                   (indexes/typed-refs? (get db-config :type-map) values)
-                   (map indexes/typed-ref->ref))
-                 (mapcat (fn [value]
-                           (resolve-attribute-value-into-typed-refs
-                            db db-config attr value)))
-                 (set)))
-          values (reverse attr-path)))
+            (let [result (transient #{})]
+              (doseq [value (cond->> values
+                              (indexes/typed-refs? (get db-config :type-map) values)
+                              (map indexes/typed-ref->ref))]
+                (doseq [typed-ref (resolve-attribute-value-into-typed-refs
+                                   db db-config attr value)]
+                  (conj! result typed-ref)))
+              (persistent! result)))
+          values
+          (reverse attr-path)))
 
 
 ;;;; Public query functions
