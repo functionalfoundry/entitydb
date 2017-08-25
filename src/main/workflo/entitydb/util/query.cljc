@@ -152,19 +152,16 @@
 (defn- resolve-attr-path-into-typed-refs
   [db db-config attr-path values]
   (reduce (fn [values attr]
-            (cond->> values
-              ;; Convert typed refs in the result to untyped refs
-              (indexes/typed-refs? (get db-config :type-map) values)
-              (into #{} (map indexes/typed-ref->ref))
-
-              ;; Generate a set of all attr/value combinations
-              true (into #{} (map (partial vector attr)))
-
-              ;; Resolve the all attr/value combinations into typed refs
-              true (into #{} (mapcat (fn [[attr value]]
-                                       (resolve-attribute-value-into-typed-refs
-                                        db db-config attr value))))))
-          values (reverse attr-path)))
+            (let [result (transient #{})]
+              (doseq [value (cond->> values
+                              (indexes/typed-refs? (get db-config :type-map) values)
+                              (map indexes/typed-ref->ref))]
+                (doseq [typed-ref (resolve-attribute-value-into-typed-refs
+                                   db db-config attr value)]
+                  (conj! result typed-ref)))
+              (persistent! result)))
+          values
+          (reverse attr-path)))
 
 
 ;;;; Public query functions
@@ -184,5 +181,4 @@
    `values` when following the given attribute `path`."
   [db db-config path values]
   (->> (resolve-attr-path-into-typed-refs db db-config path values)
-       (into #{} (comp (map #(cons :workflo.entitydb.v1/data %))
-                       (map #(get-in db %))))))
+       (into #{} (map #(get-in db `[:workflo.entitydb.v1/data ~@%])))))
