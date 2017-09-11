@@ -183,8 +183,8 @@
             (every? (fn [[k in-val]]
                       (let [out-val (get out-entity k)]
                         (cond
-                          (entity? in-val {:use-spec? false}) (ref? out-val)
-                          (entities? in-val {:use-spec? false}) (refs? out-val)
+                          (entity? in-val {:use-spec? false :loose? true}) (ref? out-val)
+                          (entities? in-val {:use-spec? false :loose? true}) (refs? out-val)
                           :else true)))
                     in-entity)))
   :ret  ::specs.v1/entity)
@@ -202,7 +202,7 @@
                      ;; Multi-reference attribute
                      (and (coll? v)
                           (every? (fn [v*]
-                                    (or (entity? v* {:use-spec false})
+                                    (or (entity? v* {:use-spec? false :loose? true})
                                         (ref? v*)))
                                   v))
                      (walk entity->ref identity v)
