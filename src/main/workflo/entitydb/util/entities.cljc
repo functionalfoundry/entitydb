@@ -166,7 +166,8 @@
 
 
 (s/fdef entity->ref
-  :args (s/cat :entity ::specs.v1/loose-entity)
+  :args (s/cat :entity (s/or :entity ::specs.v1/loose-entity
+                             :ref ::specs.v1/ref))
   :ret  ::specs.v1/ref)
 
 
@@ -194,17 +195,15 @@
             (assoc out k
                    (cond
                      ;; Single reference attribute
-                     (and (map? v)
-                          (contains? v :workflo/id)
-                          (>= (count v) 2))
+                     (or (entity? v {:use-spec false})
+                         (ref? v))
                      (entity->ref v)
 
                      ;; Multi-reference attribute
                      (and (coll? v)
                           (every? (fn [v*]
-                                    (and (map? v*)
-                                         (contains? v* :workflo/id)
-                                         (>= (count v*) 2)))
+                                    (or (entity? v* {:use-spec false})
+                                        (ref? v*)))
                                   v))
                      (walk entity->ref identity v)
 
