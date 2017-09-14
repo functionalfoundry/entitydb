@@ -195,7 +195,7 @@
             (assoc out k
                    (cond
                      ;; Single reference attribute
-                     (or (entity? v {:use-spec false})
+                     (or (entity? v {:use-spec? false})
                          (ref? v))
                      (entity->ref v)
 
