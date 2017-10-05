@@ -6,7 +6,7 @@
 
 
 (set-env!
- :resource-paths #{"src/main"}
+ :resource-paths #{"src/main" "resources"}
  :dependencies '[;; Boot setup
                  [adzerk/boot-cljs "2.0.0" :scope "test"]
                  [adzerk/boot-reload "0.5.1" :scope "test"]
@@ -82,7 +82,8 @@
   (comp (codox :name "workflo/entitydb"
                :source-paths #{"src/main"}
                :output-path "docs"
-               :metadata {:doc/format :markdown})
+               :metadata {:doc/format :markdown}
+               :themes [:default :entitydb])
         (target)))
 
 

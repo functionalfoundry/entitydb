@@ -1,0 +1,4 @@
+{:resources ["entitydb.css"]
+ :transforms [[:head] [:append [:link {:rel "stylesheet"
+                                       :type "text/css"
+                                       :href "entitydb.css"}]]]}
