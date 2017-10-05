@@ -2,9 +2,9 @@
 
 
 [![Clojars Project](https://img.shields.io/clojars/v/workflo/entitydb.svg)](https://clojars.org/workflo/entitydb)
-[![Build Status](https://travis-ci.org/workfloapp/entitydb.svg?branch=master)](https://travis-ci.org/workfloapp/entitydb)
+[![Build Status](https://travis-ci.org/functionalfoundry/entitydb.svg?branch=master)](https://travis-ci.org/functionalfoundry/entitydb)
 
-[API docs](https://workfloapp.github.io/entitydb/)
+[API docs](https://functionalfoundry.github.io/entitydb/)
 
 **NOTE: Everything here is considered work in progress and subject to change.**
 
