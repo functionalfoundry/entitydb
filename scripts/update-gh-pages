@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -x
+
+TMPDIR=$(mktemp -d)
+
+boot docs \
+  && cp -R target/docs "$TMPDIR" \
+  && git checkout gh-pages \
+  && cp -R "$TMPDIR/" . \
+  && rm -rf "$TMPDIR" \
+  && git add --all \
+  && git commit -m "Update API documentation" \
+  && git push origin gh-pages \
+  && git checkout master
