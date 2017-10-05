@@ -1,0 +1,484 @@
+(require 'workflo.entitydb.indexes.vae :as vae)
+(require '[workflo.entitydb.indexes.vae :as vae])
+(vae/empty-index)
+(hash-map (vae/empty-index))
+(vae/remove-eav (vae/empty-index) [:user "user-id"] :user/name "old name" "new name")
+(vae/remove-eav (vae/empty-index) [:user "user-id"] :user/name "old name")
+(in-ns 'workflo.entitydb.index.vae)
+(remove-eav (empty-index) [:user "user-id"] :user/name "old name")
+(require '[workflo.entitydb.indexes.vae] :reload)
+(require '[workflo.entitydb.indexes.vae :as vae] :reload)
+(vae/remove-eav (vae/empty-index) [:user "user-id"] :user/name "old name")
+(vae/remove-eav {} [:user "user-id"] :user/name "old name")
+(vae/remove-eav {"old name" {:user/name #{[:user "user-id"]}}} [:user "user-id"] :user/name "old name")
+(vae/remove-eav {"old name" {:user/name #{[:user "user-id"] [:user "other-id"]}}} [:user "user-id"] :user/name "old name")
+(require '[workflo.entitydb.indexes.vae :as vae] :reload)
+(vae/remove-eav {"old name" {:user/name #{[:user "user-id"] [:user "other-id"]}}} [:user "user-id"] :user/name "old name")
+(require '[workflo.entitydb.indexes.vae :as vae] :reload)
+(vae/remove-eav {"old name" {:user/name #{[:user "user-id"] [:user "other-id"]}}} [:user "user-id"] :user/name "old name")
+(require '[workflo.entitydb.indexes.vae :as vae] :reload)
+(vae/remove-eav {"old name" {:user/name #{[:user "user-id"] [:user "other-id"]}}} [:user "user-id"] :user/name "old name")
+(require '[workflo.entitydb.indexes.vae :as vae] :reload)
+(vae/remove-eav {"old name" {:user/name #{[:user "user-id"] [:user "other-id"]}}} [:user "user-id"] :user/name "old name")
+(require '[clojure.set :as set])
+(set/subset? #{1 2} #{1 2})
+assocEx
+(assocEx {} :k :v)
+(.assocEx {} :k :v)
+(.without {:k :v} :k)
+(require '[workflo.entitydb.indexes.vae :as vae] :reload)
+(require '[workflo.entitydb.indexes.core :as indexes.core] :reload)
+indexes.core/create-index
+indexes.core/recreate-index
+(doc indexes.core/recreate-index)
+(clojure.core/get-in
+       workflo.entitydb.indexes.core/registered-indexes
+       [index-name :spec])
+(clojure.core/get-in workflo.entitydb.indexes.core/registered-indexes :vae)
+(clojure.core/get-in workflo.entitydb.indexes.core/registered-indexes [:vae])
+(clojure.core/get-in workflo.entitydb.indexes.core/registered-indexes [:vae :spec])
+(s/valid? (clojure.core/get-in workflo.entitydb.indexes.core/registered-indexes [:vae :spec]) {})
+(clojure.spec.alpha/valid? (clojure.core/get-in workflo.entitydb.indexes.core/registered-indexes [:vae :spec]) {})
+(clojure.spec.alpha/valid? (clojure.core/get-in workflo.entitydb.indexes.core/registered-indexes [:vae :spec]) nil)
+(clojure.spec.alpha/valid? (clojure.core/get-in workflo.entitydb.indexes.core/registered-indexes [:vae :spec]) {})
+(require '[clojure.spec.alpha :as s])
+(s/exercise :workflo.entitydb.specs.v1/indexed-attributes)
+(require 'workflo.entitydb.specs.v1)
+(s/exercise :workflo.entitydb.specs.v1/indexed-attributes)
+(s/exercise :workflo.entitydb.specs.v1/indexed-attributes 1)
+(s/exercise :workflo.entitydb.specs.v1/type-map 1)
+(require 'workflo.entitydb.specs.v1 :reload)
+(require 'workflo.entitydb.util.indexes :reload)
+(require 'workflo.entitydb.indedx.vae :reload)
+(require 'workflo.entitydb.indexes.vae :reload)
+(require 'workflo.entitydb.indexes.common :reload)
+(require 'workflo.entitydb.util.indexes :reload)
+(require 'workflo.entitydb.specs.v1 :reload)
+(s/describe :workflo.entitydb.specs.v1/entitydb)
+(require 'workflo.entitydb.util.indexes :reload)
+(require 'workflo.entitydb.specs.v1 :reload)
+(s/describe :workflo.entitydb.specs.v1/entitydb)
+(require 'workflo.entitydb.util.indexes :reload)
+(require 'workflo.entitydb.specs.v1 :reload)
+(require 'workflo.entitydb.util.indexes :reload)
+(require '[workflo.macros.entity :refer [defentity]))
+(require '[workflo.macros.entity :refer [defentity])
+(require '[workflo.macros.entity :refer [defentity]])
+(s/def :user/name ::workflo.macros.specs.types/string)
+(require '[clojure.spec.alpha :as s])
+(s/def :user/name ::workflo.macros.specs.types/string)
+(s/def :user/name :workflo.macros.specs.types/string)
+(s/def :user/email (s/and :workflo.macros.specs.types/string :workflo.macros.specs.types/indexed))
+(defentity user (spec (s/keys :req [:user/name :user/email])))
+(workflo.macros.entity/registered-entities)
+(workflo.entitydb.core/type-map-from-registered-entities)
+(require 'workflo.entitydb.core)
+(require 'workflo.entitydb.core :reload)
+(require 'workflo.entitydb.core :reload-all)
+(workflo.entitydb.core/type-map-from-registered-entities)
+(workflo.entitydb.core/indexed-attributes-from-registered-entities)
+(vals (workflo.macros.entity/registered-entities))
+(map workflo.macros.entity.schema/entity-schema (vals (workflo.macros.entity/registered-entities)))
+(require 'workflo.entitydb.core :reload-all)
+(map workflo.macros.entity.schema/entity-schema (vals (workflo.macros.entity/registered-entities)))
+(workflo.entitydb.core/indexed-attributes-from-registered-entities)
+(require 'workflo.entitydb.core :reload-all)
+(workflo.entitydb.core/indexed-attributes-from-registered-entities)
+(require 'workflo.entitydb.util.indexes)
+(in-ns 'workflo.entitydb.util.indexes)
+(def args {:db {:workflo.entitydb.v1/data {}},
+     :db-config
+     {:indexed-attributes [:user/email],
+      :type-map
+      {:project/name :project,
+       :team/name :team,
+       :team/users :team,
+       :team/project :team,
+       :user/name :user,
+       :user/email :user,
+       :user/address :user}},
+     :index-name :vae,
+     :typed-ref [:team "aa1a28da05884e96a169c8e78cb2dbb9"],
+     :attr :user/email,
+     :value {NaN 0}})
+(def args {:db {:workflo.entitydb.v1/data {}},
+)
+(def db {:workflo.entitydb.v1/data {}})
+(def db-config {:indexed-attributes [:user/email],
+      :type-map
+      {:project/name :project,
+       :team/name :team,
+       :team/users :team,
+       :team/project :team,
+       :user/name :user,
+       :user/email :user,
+       :user/address :user}})
+(remove-eav-from-indexes db db-config [:team "aa1a28da05884e96a169c8e78cb2dbb9"] :user/email {-1 0})
+(remove-eav-from-indexes db db-config [:team "aa1a28da05884e96a169c8e78cb2dbb9"] :user/email {nil 0})
+(remove-eav-from-indexes db db-config [:team "aa1a28da05884e96a169c8e78cb2dbb9"] :user/email {;NaN 0})
+)
+(remove-eav-from-indexes db db-config [:team "aa1a28da05884e96a169c8e78cb2dbb9"] :user/email {'NaN 0})
+0/0
+(remove-eav-from-indexes db db-config [:team "aa1a28da05884e96a169c8e78cb2dbb9"] :user/email {Double/NaN 0})
+(= Double/NaN Double/NaN)
+(require 'workflo.entitydb.util.indexes)
+(in-ns 'workflo.entitydb.util.indexes)
+(typed-ref? {:team/name :team} [:team "7eec29119f7e4d68ade1c6b0a8662911"])
+(require 'clojure.spec.test)
+(require 'clojure.spec.test.alpha)
+(clojure.spec.test.alpha/instrument)
+(typed-ref? {:team/name :team} [:team "7eec29119f7e4d68ade1c6b0a8662911"])
+(s/valid? :workflo.entitydb.specs.indexes.common/typed-ref [:team "7eec29119f7e4d68ade1c6b0a8662911"])
+(require 'workflo.entitydb.util.indexes :reload)
+(require 'workflo.entitydb.util.indexes :reload-all)
+(clojure.spec.test.alpha/instrument)
+(typed-refs? {:team/name :team} #{[:team "f5d8872e6c414356b3790913857960bd"]})
+(clojure.spec.test.alpha/instrument)
+(typed-refs? {:team/name :team} #{[:team "f5d8872e6c414356b3790913857960bd"]})
+(typed-refs? {:team/name :team 'foo 'bar} #{[:team "f5d8872e6c414356b3790913857960bd"]})
+(typed-refs? {:team/name :team} #{[:team "f5d8872e6c414356b3790913857960bd"]})
+(require '[workflo.entitydb.core :as entitydb])
+(require '[workflo.entitydb.util.operations :as ops])
+(require '[workflo.entitydb.util.entities :as entities])
+(entities/refify-entity {:workflo/id "123"})
+(entities/refify-entity {:workflo/id "123" :ui-component/examples #{{:workflo/id "123"} {:workflo/id "345" :example/name "Title"}})
+(entities/refify-entity {:workflo/id "123" :ui-component/examples #{{:workflo/id "123"} {:workflo/id "345" :example/name "Title"}}})
+(entities/refify-entity {:workflo/id "59a443fddee14da2a39cb5a3611acd01" :ui-component/examples #{{:workflo/id "59a443fddee14da2a39cb5a3611acd01"} {:workflo/id "59a443fddee14da2a39cb5a3611acd01" :example/name "Title"}}})
+(entities/refify-entity {:workflo/id "59a443fddee14da2a39cb5a3611acd01" :ui-component/examples #{{:workflo/id "59a443fddee14da2a39cb5a3611acd01"} {:workflo/id "59a443fddee14da2a39cb5a3611acd02" :example/name "Title"}}})
+{:workflo/id "59b6b5b4f20c4c0792a6e1df37ca83a2",
+    :component-example/name "New example 28",
+    :component-example/component-tree
+    {:workflo/id "59b6b5b4fd33418aa537d67bc996c1f7",
+     :component-tree/root
+     {:workflo/id "59b6b5b48a29468cb5ea1280ba7d7cc5",
+      :component-tree-component/ui-component
+      {:workflo/id "59917c0b1a7c4403a40e2658dde8fdee",
+       :ui-component/repo
+       {:workflo/id "59a443fddee14da2a39cb5a3611acd01"},
+       :ui-component/props
+       #{{:workflo/id "59917c0bb1314657a0f92fbea4ec2d03",
+          :prop/name "children",
+          :prop/type :any}
+         {:workflo/id "59917c0b357e4282a795a03356595977",
+          :prop/name "fill",
+          :prop/type :string}
+         {:workflo/id "59917c0b62cd4c6eb04b5c42286ba72f",
+          :prop/name "name",
+          :prop/type :string}
+         {:workflo/id "59917c0bb98040a3a5b168468118e181",
+          :prop/name "size",
+          :prop/type :union}
+         {:workflo/id "59917c0bd4cb43f7ac17f1717973eb31",
+          :prop/name "stroke",
+          :prop/type :string}
+         {         {      17c0b1348416b8eae9db25dc90317"         {        name "theme",
+                       bject}},
+       :ui-component/examples
+       #{{:workflo/id "       #{{:workfl32ad77b47dfb3b8"}
+         {:workflo/id "59b6a0221bcd430985fc79edb126ae0c"}
+         {:workflo/id "59b01f40ac3445f193bf82cd40263614"}
+                      "59b01f223bff414e82f3fd1ea42d0896"}
+         {:workflo/id "59b01f585d0449de8aaa06279c399900         {:workflo/lo/id "59b01f1675f84004b93e889f5f456704         {:workflo/id "59b01f58fc352af4a6c88f3424f7f9bf97b"}
+         {:workflo/id "59b01df85a654990a54a8ff67d565bf4"}         {:workflo//id "59b01dc1c5b44b7a9f14e47273268871"}
+         {:workflo/id "59b6a9231eca49448c12df28159bb0c8"}
+         {:workflo/id "59b01f7d512542398af2a7bdfd90b322"}
+                    d "59b01da8480a4b9b93282a79517b7919"}
+         {:workflo/id "59b698dd6d274fe18c308d96f4dfa9fb"}
+         {:workflo/id "59b69cdc9541468e85c6db019f220820"}
+         {:workflo/id "5991cbc34aac4438a47c30b3dd7922ab"}
+         {:workflo/id "59b01f09276f4fa1a24d3b92b705c402"}
+         {:workflo/id "59b01ff70c3f4d51b9288a0ef24056ed"}
+         {:workflo/id "5991cbd5dd51417f880788d844345bb8"}
+         {:workflo/id "59b01de4f4564dfcb4f85873e6307b13"}
+         {:workflo/id "59b01fe435de4449a604daa218cbe061"}
+         {:workflo/id "59b140a4c21542599da94a1fb7babc47"}
+         {:workflo/id "59b01d666d904a5         {:workflo/id "59b01d666d904a5         {:workflo/id "59b01d666d904a5         {:workflo/id "59b01d666d904a5         {:workflo/id "59b01d666d904a5         {:workflo/i652b10081d389c85e78"}
+         {:workflo/id "59b01fa3147d4718bfdbbac48411c60d"}
+         {:workflo/id "59b01f32736f40eca2e4527d49c84b32"}}}}
+{:workflo/id "59b6b5b4f20c4c0792a6e1df37ca83a2",
+ :component-example/name "New example 28",
+ :component-example/component-tree
+ {:workflo/id "59b6b5b4fd33418aa537d67bc996c1f7",
+  :component-tree/root
+  {:workflo/id "59b6b5b48a29468cb5ea1280ba7d7cc5",
+  :component-tree-component/ui-component
+  {:workflo/id "59917c0b1a7c4403a40e2658dde8fdee",
+  :ui-component/repo
+  {:workflo/id "59a443fddee14da2a39cb5a3611acd01"},
+  :ui-component/props
+  #{{:workflo/id "59917c0bb1314657a0f92fbea4ec2d03",
+     :prop/name "children",
+     :prop/type :any}
+    {:workflo/id "59917c0b357e4282a795a03356595977",
+     :prop/name "fill",
+     :prop/type :string}
+    {:workflo/id "59917c0b62cd4c6eb04b5c42286ba72f",
+     :prop/name "name",
+     :prop/type :string}
+    {:workflo/id "59917c0bb98040a3a5b168468118e181",
+     :prop/name "size",
+     :prop/type :union}
+    {:workflo/id "59917c0bd4cb43f7ac17f1717973eb31",
+     :prop/name "stroke",
+     :prop/type :string}
+    {:workflo/id "59917c0b1348416b8eae9db25dc90317",
+     :prop/name "theme",
+     :prop/type :object}},
+    :ui-component/examples
+    #{{:workflo/id "59b698f6766145c4832ad77b47dfb3b8"}
+      {:workflo/id "59b6a0221bcd430985fc79edb126ae0c"}
+      {:workflo/id "59b01f40ac3445f193bf82cd40263614"}
+      {:workflo/id "59b01f223bff414e82f3fd1ea42d0896"}
+      {:workflo/id "59b01f585d0449de8aaa06279c399900"}
+      {:workflo/id "59b01f1675f84004b93e889f5f456704"}
+      {:workflo/id "59b01fc352af4a6c88f3424f7f9bf97b"}
+      {:workflo/id "59b01df85a654990a54a8ff67d565bf4"}
+      {:workflo/id "59b01dc1c5b44b7a9f14e47273268871"}
+      {:workflo/id "59b6a9231eca49448c12df28159bb0c8"}
+      {:workflo/id "59b01f7d512542398af2a7bdfd90b322"}
+      {:workflo/id "59b01da8480a4b9b93282a79517b7919"}
+      {:workflo/id "59b698dd6d274fe18c308d96f4dfa9fb"}
+      {:workflo/id "59b69cdc9541468e85c6db019f220820"}
+      {:workflo/id "5991cbc34aac4438a47c30b3dd7922ab"}
+      {:workflo/id "59b01f09276f4fa1a24d3b92b705c402"}
+      {:workflo/id "59b01ff70c3f4d51b9288a0ef24056ed"}
+      {:workflo/id "5991cbd5dd51417f880788d844345bb8"}
+      {:workflo/id "59b01de4f4564dfcb4f85873e6307b13"}
+      {:workflo/id "59b01fe435de4449a604daa218cbe061"}
+      {:workflo/id "59b140a4c21542599da94a1fb7babc47"}
+      {:workflo/id "59b01d666d904a5fb4e230a8a93170a3"}
+      {:workflo/id "5993634ba6e94cb68f3b1ed3c24d59a3"}
+      {:workflo/id "59b01f69fd1e4e5984d1c6b5eaca58d8"}
+      {:workflo/id "5991ca59dc264652b10081d389c85e78"}
+      {:workflo/id "59b01fa3147d4718bfdbbac48411c60d"}
+      {:workflo/id "59b01f32736f40eca2e4527d49c84b32"}}}}}}
+(def example {:workflo/id "59b6b5b4f20c4c0792a6e1df37ca83a2",
+ :component-example/name "New example 28",
+ :component-example/component-tree
+ {:workflo/id "59b6b5b4fd33418aa537d67bc996c1f7",
+  :component-tree/root
+  {:workflo/id "59b6b5b48a29468cb5ea1280ba7d7cc5",
+  :component-tree-component/ui-component
+  {:workflo/id "59917c0b1a7c4403a40e2658dde8fdee",
+  :ui-component/repo
+  {:workflo/id "59a443fddee14da2a39cb5a3611acd01"},
+  :ui-component/props
+  #{{:workflo/id "59917c0bb1314657a0f92fbea4ec2d03",
+     :prop/name "children",
+     :prop/type :any}
+    {:workflo/id "59917c0b357e4282a795a03356595977",
+     :prop/name "fill",
+     :prop/type :string}
+    {:workflo/id "59917c0b62cd4c6eb04b5c42286ba72f",
+     :prop/name "name",
+     :prop/type :string}
+    {:workflo/id "59917c0bb98040a3a5b168468118e181",
+     :prop/name "size",
+     :prop/type :union}
+    {:workflo/id "59917c0bd4cb43f7ac17f1717973eb31",
+     :prop/name "stroke",
+     :prop/type :string}
+    {:workflo/id "59917c0b1348416b8eae9db25dc90317",
+     :prop/name "theme",
+     :prop/type :object}},
+    :ui-component/examples
+    #{{:workflo/id "59b698f6766145c4832ad77b47dfb3b8"}
+      {:workflo/id "59b6a0221bcd430985fc79edb126ae0c"}
+      {:workflo/id "59b01f40ac3445f193bf82cd40263614"}
+      {:workflo/id "59b01f223bff414e82f3fd1ea42d0896"}
+      {:workflo/id "59b01f585d0449de8aaa06279c399900"}
+      {:workflo/id "59b01f1675f84004b93e889f5f456704"}
+      {:workflo/id "59b01fc352af4a6c88f3424f7f9bf97b"}
+      {:workflo/id "59b01df85a654990a54a8ff67d565bf4"}
+      {:workflo/id "59b01dc1c5b44b7a9f14e47273268871"}
+      {:workflo/id "59b6a9231eca49448c12df28159bb0c8"}
+      {:workflo/id "59b01f7d512542398af2a7bdfd90b322"}
+      {:workflo/id "59b01da8480a4b9b93282a79517b7919"}
+      {:workflo/id "59b698dd6d274fe18c308d96f4dfa9fb"}
+      {:workflo/id "59b69cdc9541468e85c6db019f220820"}
+      {:workflo/id "5991cbc34aac4438a47c30b3dd7922ab"}
+      {:workflo/id "59b01f09276f4fa1a24d3b92b705c402"}
+      {:workflo/id "59b01ff70c3f4d51b9288a0ef24056ed"}
+      {:workflo/id "5991cbd5dd51417f880788d844345bb8"}
+      {:workflo/id "59b01de4f4564dfcb4f85873e6307b13"}
+      {:workflo/id "59b01fe435de4449a604daa218cbe061"}
+      {:workflo/id "59b140a4c21542599da94a1fb7babc47"}
+      {:workflo/id "59b01d666d904a      {:workflo/id "59b01d666d904a      {:workflo/id 4cb68f3b1ed3c24d59a3"}
+      {:workflo/id "59b01f69fd1e4e5984d1c6b5eaca58d8"}
+      {:workflo/id "5991ca59dc264652b10081d389c85e78"}
+      {:workflo/id "59b01fa3147d4718bfdbbac48411c60d"}
+      {:workflo/id "59b01f32736f40eca2e4527d49c84b32"}}}}}})
+example
+(def example {:workflo/id "59b6b5b4f20c4c0792a6e1df37ca83a2",
+ :component-example/name "New example 28",
+ :component-example/component-tree
+ {:workflo/id "59b6b5b4fd33418aa537d67bc996c1f7",
+  :component-tree/root
+  {:workflo/id "59b6b5b48a29468cb5ea1280ba7d7cc5",
+  :component-tree-component/ui-component
+  {:workflo/id "59917c0b1a7c4403a40e2658dde8fdee",
+  :ui-component/repo
+  {:workflo/id "59a443fddee14da2a39cb5a3611acd01"},
+  :ui-component/props
+  #{{:workflo/id "59917c0bb1314657a0f92fbea4ec2d03",
+     :prop/name "children",
+     :prop/type :any}
+    {:workflo/id "59917c0b357e4282a795a03356595977",
+     :prop/name "fill",
+     :prop/type :string}
+    {:workflo/id "59917c0b62cd4c6eb04b5c42286ba72f",
+     :prop/name "name",
+     :prop/type :string}
+    {:workflo/id "59917c0bb98040a3a5b168468118e181",
+     :prop/name "size",
+     :prop/type :union}
+    {:workflo/id "59917c0bd4cb43f7ac17f1717973eb31",
+     :prop/name "stroke",
+     :prop/type :string}
+    {:workflo/id "59917c0b1348416b8eae9db25dc90317",
+     :prop/name "them     :prop/name "them     :prop/name "them     t/     :prop/name "them lo/id "59b698f6766145     :prop/name "them      {:workflo/id "59b6a0221bcd430985fc79edb126ae0c"}
+      {:workflo/id "59b01f40ac3445f193bf82cd40263614"}
+      {:workflo/id "59b01f223bff414e82f3fd1ea42d0896"}
+      {:workflo/id "59b01f585d0449de8aaa06279c399900"}
+      {:workflo/id "59b01f1675f      {:workf5f456704"}
+      {:workflo/id "59b01fc352af4a6c88f3424f7f9bf9      {:workflo/id "/id "59b01df85a654990a54a8ff67d565bf4"}
+      {:workflo/id "5      {:workflo/id e47273268871"}
+      {:workflo/id "59b6a9231eca49448c12df28159bb0c8"}
+      {:wo      {:wo      {:wo 5423      {:wo      {:}
+      {:workflo/id "59b01da8480a4      {:workflo/id "}
+      {:workflo/id "59b698dd6d274fe18c308d96f4dfa9fb"}
+      {:workflo/id "59b69cdc9541468e85c6db019f220      {:workflo/id "5/id "5991cbc34aac4438a47c30b3dd7922ab"}
+      {:workflo/id "59b01f09276f4fa1a24d3b92b705c402"}
+      {:workflo/id "59b01ff70c3f4d51b9288a0ef24056ed"}
+      {:workflo/id "5991cbd5dd51417f880788d844345bb8"}
+      {:workflo/id "59b01de4f4564dfcb4f85873e6307b13"}
+      {:workflo/id "59b01fe435de4449a604daa218cbe061"}
+      {:workflo/id "59b140a4c21542      {:workflo/id "59b140a4c21rkflo/id "59b01d666d904a      {:workflo/id "59b140 {:workflo/id "5993634ba6e94cb68f3b1ed3c24d59a3"}
+      {:workflo/id "59b01f69fd1e4e      {:workflo/id "59b01f69fd1e4e      {:workflo/id 4652b10081d389c85e78"}
+      {:workflo/id "59b01fa3147d4718bfdbbac48411c60d"}
+(def example {:workflo/id "59b6b5b4f20c4c0792a6e1df37ca83a2",
+ :component-example/name "New example 28",
+ :component-example/component-tree
+ {:workflo/id "59b6b5b4fd33418aa537d67bc996c1f7",
+  :component-tree/root
+  {:workflo/id "59b6b5b48a29468cb5ea1280ba7d7cc5",
+  :component-tree-component/ui-component
+  {:workflo/id "59917c0b1a7c4403a40e2658dde8fdee",
+  :ui-component/repo
+  {:workflo/id "59a443fddee14da2a39cb5a3611acd01"},
+  :ui-component/props
+  #{{:workflo/id "59917c0bb1314657a0f92fbea4ec2d03",
+     :prop/name "children",
+     :prop/type :any}
+    {:workflo/id "59917c0b357e4282a795a03356595977",
+     :prop/name "fill",
+     :prop/type :string}
+    {:workflo/id "59917c0b62cd4c6eb04b5c42286ba72f",
+     :prop/name "name",
+     :prop/type :string}
+    {:workflo/id "59917c0bb98040a3a5b168468118e181",
+     :prop/name "size",
+     :prop/type :union}
+    {:workflo/id "59917c0bd4cb43f7ac17f1717973eb31",
+     :prop/name "stroke",
+     :prop/type :string}
+    {:workflo/id "59917c0b1348416b8eae9db25dc90317",
+     :prop/name "them     :prop/name "them     :prop/name "them     t/examples
+    #{{:workflo/id "59b698f6766145c4832ad77b47dfb3b8"}
+      {:workflo/id "59b6a0221bcd430985fc79edb126ae0c"}
+      {:workflo/id "59b01f40ac3445f193bf82cd40263614"}
+      {:workflo/id "59b01f223bff414e82f3fd1ea42d0896"}
+      {:workflo/id "59b01f585d0449de8aaa06279c399900"}
+      {:workflo/id "59b01f1675f84004b93e889f5f456704"}
+      {:workflo/id "59b01fc352af4a6c88f3424f7f9bf97b"}
+      {:workflo/id "59b01df85a654990a54a8ff67d565bf4"}
+      {:workflo/id "59b01dc1c5b44b7a9f14e47273268871"}
+      {:workflo/id "59b6a9231eca49448c12df28159bb0c8"}
+      {:workflo/id "59b01f7d512542398af2a7bdfd90b322"}
+      {:workflo/id "59b01da8480a4b9b93282a79517b7919"}
+      {:workflo/id "59b698dd6d274fe18c308d96f4dfa9fb"}
+      {:workflo/id "59b69cdc9541468e85c6db019f220820"}
+      {:workflo/id "5991cbc34aac4438a47c30b3dd7922ab"}
+      {:workflo/id "59b01f09276f4fa1a24d3b92b705c402"}
+      {:workflo/id "59b01ff70c3f4d51b9288a0ef24056ed"}
+      {:workflo/id "5991cbd5dd51417f880788d844345bb8"}
+      {:workflo/id "59b01de4f4564dfcb4f85873e6307b13"}
+      {:workflo/id "59b01fe435de4449a604daa218cbe061"}
+      {:workflo/id "59b140a4c21542599da94a1fb7babc47"}
+      {:workflo/id "59b01d666d904a5fb4e230a8a93170a3"}
+      {:workflo/id "5993634ba6e94c      {:workflo/id }
+      {:workflo/id "59b01f69fd1e4e5984d1c6b5eaca58d8"}
+      {:workflo/id "5991ca59dc2646      {:workflo/id "
+      {:workflo/id "59b01fa3147d4718bfdbbac48411c60d"}
+      {:workflo/id "59b01f32736f40eca2e4527d49c84b32"}}}}}})
+{:workflo/id "59b6b5b4f20c4c0792a6e1df37ca83a2",
+ :component-example/name "New example 28",
+ :component-example/component-tree
+ {:workflo/id "59b6b5b4fd33418aa537d67bc996c1f7",
+  :component-tree/root
+  {:workflo/id "59b6b5b48a29468cb5ea1280ba7d7cc5",
+  :component-tree-component/ui-component
+  {:workflo/id "59917c0b1a7c4403a40e2658dde8fdee",
+  :ui-component/repo
+  {:workflo/id "59a443fddee14da2a39cb5a3611acd01"},
+  :ui-component/props
+  #{{:workflo/id "59917c0bb1314657a0f92fbea4ec2d03",
+     :prop/name "children",
+     :prop/type :any}
+    {:workflo/id "59917c0b357e4282a795a03356595977",
+     :prop/name "fill",
+     :prop/type :string}
+    {:workflo/id "59917c0b62cd4c6eb04b5c42286ba72f",
+     :prop/name "name",
+     :prop/type :string}
+    {:workflo/id "59917c0bb98040a3a5b168468118e181",
+     :prop/name "size",
+     :prop/type :union}
+    {:workflo/id "59917c0bd4cb43f7ac17f1717973eb31",
+     :prop/name "stroke",
+     :prop/type :string}
+    {:workflo/id "59917c0b1348416b8eae9db25dc90317",
+     :prop/name "them     :prop/name "them     :prop/name "them     t/examples
+    #{{:workflo/id "59b698f6766145c4832ad77b47dfb3b8"}
+      {:workflo/id "59b6a0221bcd430985fc79edb126ae0c"}
+      {:workflo/id "59b01f40ac3445f193bf82cd40263614"}
+      {:workflo/id "59b01f223bff414e82f3fd1ea42d0896"}
+      {:workflo/id "59b01f585d0449de8aaa06279c399900"}
+      {:workflo/id "59b01f1675f84004b93e889f5f456704"}
+      {:workflo/id "59b01fc352af4a6c88f3424f7f9bf97b"}
+      {:workflo/id "59b01df85a654990a54a8ff67d565bf4"}
+      {:workflo/id "5      {:workflo/id e47      {:workflo/id "5orkflo/id "59b6a9231eca49448c12df28159bb0c8"}
+      {:wo      {:wo      {:wo  42398af2a7bdfd90b322"}
+      {:workflo/id "59b01da8480a4b9b93282a79517b7919"}
+      {:workflo/id "59b698d      {:workflo/id "59b698d
+      {:workflo/id "59b69cdc9541468e85c6db019f220820"}
+      {:workflo/id "5991cbc34aac4438a47c30b3dd7922ab"}
+      {:workflo/      {:workflo/      4d3b      {:workflo/      orkflo/id "59b01ff70c3f4d51b9288a0ef24056ed"}
+      {:workflo/id "5991cbd5dd51417f880788d844345bb8"}
+      {:workflo/id "59b01de4f4564dfcb4f85873e6307b13"}
+      {:workflo/id "59b01fe435de4449a604daa218cbe061"}
+      {:workflo/id "59b140a4c21542599da94a1fb7babc47"}
+      {:workflo/id "59b01d666d904a      {:workflo/id }
+      {:workflo/id "5993634ba6e94cb68f3b1ed3c24d59a3"}
+      {:workflo/id "59b01f69fd1e4e5984d1c6b5eaca58d8"}
+      {:workflo/id "5991ca59dc264652b10081d389c85e78"}
+(slurp "/Users/jannis/Untitled")
+(read-string (slurp "/Users/jannis/Untitled"))
+(def example (read-string (slurp "/Users/jannis/Untitled")))
+example
+(entities/entity? example)
+(entities/entity? example {:use-spec? false})
+(entities/ref? example {:use-spec? false})
+(entities/ref? example)
+(entities/entity? example)
+(entities/entity? example {:use-spec false})
+(entities/entity? example {:use-spec? false})
+(entities/entity? example {:use-spec? true})
+(entities/entity? example {:use-spec? true :loose? false})
+(def example {:workflo/id "59ba73e2c9e44662963901e05df3d037", :component-example/component-tree {:workflo/id "59ba73e2e8f344e69ef57c5c6db76ce8", :component-tree/root {:workflo/id "59ba73e2934d4ea9b9cf564218fbc975", :component-tree-component/ui-component {:workflo/id "59b95938ff854a79a23df6903c489e7c", :ui-component/name "Badge", :ui-component/props #{{:workflo/id "59b95938283b4b17a943e8725885ac0f", :prop/name "children", :prop/type :any, :prop/default "<Placeholder />"} {:workflo/id "59b9593886bb4d46bbea1168b5cf65e6", :prop/name "count", :prop/type :number, :prop/default "12"} {:workflo/id "59b9593804ef4f25a2010c32d0636504", :prop/name "dot", :prop/type :boolean, :prop/default "false", :prop/options {"true" true, "false" false}} {:workflo/id "59b9593832f54f5b866700c37906c223", :prop/name "onClick", :prop/type :function} {:workflo/id "59b95938575e4774be5b3a15211f48d1", :prop/name "overflowCount", :prop/type :number} {:workflo/id "59b9593818204f48ab4c203c33b443fe", :prop/name "status", :prop/type :union, :prop/options {"'success'" "success", "'processing'" "processing", "'default'" "default", "'error'" "error", "'warning'" "warning"}} {:workflo/id "59b959381b564896bc28c8a0925493ff", :prop/name "text", :prop/type :string} {:workflo/id "59b95938f90245748322746da315cb5a", :prop/name "theme", :prop/type :any}}}, :component-tree-component/props #{}, :component-tree-component/children #{{:workflo/id "59ba73ef856a45fc87d0fa31f5203c16", :component-tree-component/name "Button", :component-tree-component/ui-component {:workflo/id "59b9593889814f5cac445d26de0dfb1f", :ui-component/name "Button", :ui-component/props #{{:workflo/id "59b95938d557488fa806edb6661bc87d", :prop/name "label", :prop/type :string, :prop/default "''"} {:workflo/id "59b95938237942c5b116feb4959f451c", :prop/name "onClick", :prop/type :function, :prop/default "() => {}"}}}, :component-tree-component/props #{{:workflo/id "59ba73f247be4d7aaf0edd288481c6c3", :component-tree-prop/name "label", :component-tree-prop/prop {:workflo/id "59b95938d557488fa806edb6661bc87d", :prop/name "label", :prop/type :string, :prop/default "''"}, :component-tree-prop/value {:workflo/id "59ba73fa74b64f49a2a24322deda9f63", :component-tree-prop-value/value "'Click me'"}}}, :component-tree-component/children #{}}}}}})
+example
+(require '[workflo.entitydb.util.entities])
+(workflo.entitydb.util.entities/entity? example)
+(workflo.entitydb.util.entities/entity? example {:use-spec? false})
+(workflo.entitydb.util.entities/refify-entity example)
+(workflo.entitydb.util.entities/entity? example {:use-spec? false})
